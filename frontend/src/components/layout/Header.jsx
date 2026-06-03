@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import logoSangueAmigo from "../../assets/logo-sangue-amigo.jpeg";
 import styles from "./Header.module.css";
 
 function Header() {
@@ -65,8 +66,11 @@ function Header() {
     <header className={styles.mainHeader}>
       <div className={styles.headerContent}>
         <Link to="/home" className={styles.logoArea}>
-          <span className={styles.logoIcon}>+</span>
-          <span className={styles.logoText}>SANGUE AMIGO</span>
+          <img
+            src={logoSangueAmigo}
+            alt="Logo Sangue Amigo"
+            className={styles.logoImage}
+          />
         </Link>
 
         <nav className={styles.navMenu}>
