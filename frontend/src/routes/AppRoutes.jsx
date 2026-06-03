@@ -4,6 +4,7 @@ import Home from "../pages/home/Home";
 import Agendamentos from "../pages/agendamentos/Agendamentos";
 import NovoAgendamento from "../pages/agendamentos/NovoAgendamento";
 import DetalhesAgendamento from "../pages/agendamentos/DetalhesAgendamento";
+import Campanhas from "../pages/campanhas/Campanhas";
 
 function PlaceholderPage({ title, description }) {
   return (
@@ -25,12 +26,14 @@ function AppRoutes() {
       <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
       <Route path="/agendamentos/:id" element={<DetalhesAgendamento />} />
 
+      <Route path="/campanhas" element={<Campanhas />} />
+
       <Route
-        path="/campanhas"
+        path="/campanhas/:id"
         element={
           <PlaceholderPage
-            title="Campanhas e Alertas"
-            description="Tela de campanhas e alertas será criada nos próximos passos."
+            title="Detalhes da Campanha"
+            description="Detalhes da campanha serão criados no próximo passo."
           />
         }
       />
