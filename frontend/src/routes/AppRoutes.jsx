@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "../pages/home/Home";
 import Agendamentos from "../pages/agendamentos/Agendamentos";
+import NovoAgendamento from "../pages/agendamentos/NovoAgendamento";
 
 function PlaceholderPage({ title, description }) {
   return (
@@ -20,23 +21,14 @@ function AppRoutes() {
       <Route path="/home" element={<Home />} />
 
       <Route path="/agendamentos" element={<Agendamentos />} />
-
-      <Route
-        path="/agendamentos/novo"
-        element={
-          <PlaceholderPage
-            title="Novo Agendamento"
-            description="Formulário de novo agendamento será criado no próximo passo."
-          />
-        }
-      />
+      <Route path="/agendamentos/novo" element={<NovoAgendamento />} />
 
       <Route
         path="/agendamentos/:id"
         element={
           <PlaceholderPage
             title="Detalhes do Agendamento"
-            description="Detalhes do agendamento serão criados depois do formulário."
+            description="Detalhes do agendamento serão criados no próximo passo."
           />
         }
       />
