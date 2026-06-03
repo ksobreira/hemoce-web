@@ -1,0 +1,306 @@
+.page {
+  min-height: calc(100vh - 70px);
+  background-color: var(--bg-principal);
+  padding: 52px 24px 70px;
+  font-family: var(--fonte-principal);
+}
+
+.pageHeader {
+  max-width: 980px;
+  margin: 0 auto 30px;
+}
+
+.backButton {
+  border: none;
+  background-color: transparent;
+  color: var(--cor-primaria);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 22px;
+  padding: 0;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: var(--cor-primaria);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.pageHeader h1 {
+  color: var(--cor-escuro-total);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.pageHeader p {
+  color: var(--cor-escuro-medium);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.contentGrid {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.detailsCard,
+.sideCard {
+  background-color: var(--bg-card);
+  border: 1px solid #eeeeee;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.045);
+}
+
+.detailsCard {
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 26px 24px;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.bloodType {
+  width: 56px;
+  height: 56px;
+  background-color: #fff0f0;
+  color: var(--cor-primaria);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+.cardHeader h2 {
+  color: var(--cor-escuro-total);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.urgencyBadge {
+  min-width: 126px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.urgencyHigh {
+  background-color: #ffe8e8;
+  color: var(--cor-primaria);
+}
+
+.urgencyMedium {
+  background-color: #fff5df;
+  color: #b86b00;
+}
+
+.urgencyLow {
+  background-color: #e8fff4;
+  color: #00945f;
+}
+
+.descriptionArea {
+  padding: 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.descriptionArea h3 {
+  color: var(--cor-escuro-total);
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.descriptionArea p {
+  color: #555555;
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.infoGrid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoItem span {
+  color: #888888;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.infoItem strong {
+  color: var(--cor-escuro-total);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.orientationBox {
+  margin: 0 24px 24px;
+  background-color: #fff7e8;
+  border: 1px solid #ffe0a8;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.orientationBox strong {
+  display: block;
+  color: #9a5b00;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.orientationBox p {
+  color: #6b4a1b;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.actions {
+  padding: 0 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.primaryButton,
+.secondaryButton {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.primaryButton {
+  border: none;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(227, 30, 36, 0.2);
+}
+
+.primaryButton:hover {
+  background-color: #b9151a;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  border: 1px solid #dddddd;
+  background-color: #ffffff;
+  color: #555555;
+}
+
+.secondaryButton:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+.sideCard {
+  padding: 24px;
+}
+
+.sideCard h2 {
+  color: var(--cor-escuro-total);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.sideCard p {
+  color: #555555;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.mockNotice {
+  margin-top: 22px;
+  background-color: #fff7e8;
+  border: 1px solid #ffe0a8;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.mockNotice strong {
+  display: block;
+  color: #9a5b00;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.mockNotice p {
+  color: #6b4a1b;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}
