@@ -7,8 +7,48 @@ function Header() {
 
   const links = [
     { to: "/home", label: "INÍCIO" },
-    { to: "/agendamentos", label: "AGENDAMENTOS" },
-    { to: "/campanhas", label: "CAMPANHAS" },
+    {
+      to: "/agendamentos",
+      label: "AGENDAMENTOS",
+      submenu: [
+        {
+          to: "/agendamentos",
+          title: "Meus agendamentos",
+          description: "Ver histórico e próximos horários",
+        },
+        {
+          to: "/agendamentos/novo",
+          title: "Novo agendamento",
+          description: "Escolher unidade, data e horário",
+        },
+        {
+          to: "/agendamentos/1",
+          title: "Próximo agendamento",
+          description: "Hemoce Fortaleza às 14:00",
+        },
+      ],
+    },
+    {
+      to: "/campanhas",
+      label: "CAMPANHAS",
+      submenu: [
+        {
+          to: "/campanhas",
+          title: "Ver campanhas",
+          description: "Campanhas e alertas ativos",
+        },
+        {
+          to: "/campanhas/1",
+          title: "Estoque baixo O-",
+          description: "Urgência alta em Fortaleza",
+        },
+        {
+          to: "/campanhas/2",
+          title: "Semana Solidária",
+          description: "Ação especial em Sobral",
+        },
+      ],
+    },
     { to: "/orientacoes", label: "ORIENTAÇÕES" },
     { to: "/assistente", label: "ASSISTENTE IA" },
   ];
@@ -31,13 +71,29 @@ function Header() {
 
         <nav className={styles.navMenu}>
           {links.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`${styles.navLink} ${isActive(link.to)}`}
-            >
-              {link.label}
-            </Link>
+            <div key={link.to} className={styles.navItem}>
+              <Link
+                to={link.to}
+                className={`${styles.navLink} ${isActive(link.to)}`}
+              >
+                {link.label}
+              </Link>
+
+              {link.submenu && (
+                <div className={styles.submenu}>
+                  {link.submenu.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={styles.submenuItem}
+                    >
+                      <strong>{item.title}</strong>
+                      <span>{item.description}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </nav>
 
