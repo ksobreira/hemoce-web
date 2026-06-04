@@ -330,6 +330,113 @@
   transform: scale(1.18);
 }
 
+/* ==========================================================================
+   AJUSTES DO BOTÃO ESQUECEU SENHA (DENTRO DA LABEL)
+   ========================================================================== */
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.esqueceuSenhaBtn {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cor-primaria);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 6px;
+  text-decoration: none;
+  font-family: var(--fonte-principal) !important;
+  transition: color 0.2s ease;
+}
+
+.esqueceuSenhaBtn:hover {
+  text-decoration: underline;
+  color: #b31419;
+}
+
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS DO POP-UP DE RECUPERAÇÃO DE SENHA
+   ========================================================================== */
+.modalBodyVertical {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+}
+
+.modalBodyVertical h3 {
+  margin: 0 0 10px 0;
+  color: var(--cor-escuro-total);
+  font-size: 1.3rem;
+}
+
+.modalBodyVertical p {
+  margin: 0 0 20px 0;
+  color: var(--cor-escuro-medium);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.inputGroupModal {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroupModal label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+  margin-bottom: 6px;
+}
+
+.inputGroupModal input {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px !important;
+  color: var(--cor-escuro-total);
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.inputGroupModal input:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.08);
+}
+
+.btnEnviarRecuperacao {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnEnviarRecuperacao:hover {
+  background-color: #b31419;
+}
+
+
 /*Responsividade mobile*/
 @media (max-width: 992px) {
   .container {
@@ -367,3 +474,4 @@
     white-space: normal;
   }
 }
+

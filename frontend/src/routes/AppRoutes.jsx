@@ -14,6 +14,7 @@ function AppRoutes() {
 
       
       <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
       
       
       <Route path="*" element={<div style={{ color: '#fff', padding: '20px' }}>Página não encontrada (404)</div>} />
