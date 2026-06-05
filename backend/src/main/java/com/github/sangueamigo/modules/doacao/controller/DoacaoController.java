@@ -22,7 +22,7 @@ public class DoacaoController {
 
     // RF04 Histórico de doações do usuário
     @GetMapping("/historico")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<DoacaoResponse>> listarHistoricoUsuario(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -31,7 +31,7 @@ public class DoacaoController {
 
     // RF17 Histórico de doações do hemocentro
     @GetMapping("/hemocentro")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<List<DoacaoResponse>> listarHistoricoHemocentro(
             @AuthenticationPrincipal Conta conta
     ) {

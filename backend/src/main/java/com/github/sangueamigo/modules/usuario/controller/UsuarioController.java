@@ -20,7 +20,7 @@ public class UsuarioController {
 
     // RF09 Visualizar perfil
     @GetMapping("/perfil")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<UsuarioResponse> buscarPerfil(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -29,7 +29,7 @@ public class UsuarioController {
 
     // RF09 Editar perfil
     @PutMapping("/perfil")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<UsuarioResponse> atualizarPerfil(
             @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid AtualizarUsuarioRequest request

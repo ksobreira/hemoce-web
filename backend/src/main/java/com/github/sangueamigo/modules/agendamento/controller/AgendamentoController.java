@@ -31,7 +31,7 @@ public class AgendamentoController {
 
     // Criar agendamento
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<AgendamentoResponse> criar(
             @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid CriarAgendamentoRequest request
@@ -43,7 +43,7 @@ public class AgendamentoController {
 
     // RF14 Confirmar e gerar QR Code
     @PatchMapping("/{id}/confirmar")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<AgendamentoResponse> confirmar(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
@@ -53,7 +53,7 @@ public class AgendamentoController {
 
     // RF05 Cancelar agendamento
     @PatchMapping("/{id}/cancelar")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<Void> cancelar(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
@@ -64,7 +64,7 @@ public class AgendamentoController {
 
     // RF04 Histórico completo do usuário
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<AgendamentoResponse>> listarTodos(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -73,7 +73,7 @@ public class AgendamentoController {
 
     // RF04 Agendamentos ativos do usuário
     @GetMapping("/ativos")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<AgendamentoResponse>> listarAtivos(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -82,7 +82,7 @@ public class AgendamentoController {
 
     // QR Code em Base64
     @GetMapping("/{id}/qrcode")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
+    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<String> obterQrCode(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
@@ -93,7 +93,7 @@ public class AgendamentoController {
 
     // RF15 Validar QR Code (hemocentro)
     @PostMapping("/validar-qrcode")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<ValidacaoQrCodeResponse> validarQrCode(
             @RequestBody @Valid ValidarQrCodeRequest request
     ) {
@@ -102,7 +102,7 @@ public class AgendamentoController {
 
     // RF16/RF17 Painel do hemocentro
     @GetMapping("/hemocentro")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<List<AgendamentoResponse>> listarPorHemocentro(
             @AuthenticationPrincipal Conta conta,
             @RequestParam LocalDate data

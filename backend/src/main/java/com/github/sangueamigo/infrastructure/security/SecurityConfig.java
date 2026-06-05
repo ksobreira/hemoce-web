@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -23,9 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s-> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
@@ -36,11 +39,15 @@ public class SecurityConfig {
                                     "/auth/refresh",
                                     "/auth/recuperar-senha",
                                     "/auth/redefinir-senha",
-                                    "/seagger-ui/**",
+                                    "/swagger-ui/**",
                                     "/v3/api-docs/**"
                                     ).permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/hemocentros").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/hemocentros/*/horarios").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/campanhas").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/campanhas/*").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/orientacoes/**").permitAll();
+                            auth.requestMatchers("/assistente-ia/**").permitAll();
                             auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

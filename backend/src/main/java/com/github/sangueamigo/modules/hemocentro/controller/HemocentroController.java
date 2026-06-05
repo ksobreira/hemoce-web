@@ -33,7 +33,7 @@ public class HemocentroController {
 
     // Visualizar perfil próprio
     @GetMapping("/perfil")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<HemocentroResponse> buscarPerfil(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -42,7 +42,7 @@ public class HemocentroController {
 
     // Editar perfil
     @PutMapping("/perfil")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<HemocentroResponse> atualizarPerfil(
             @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid AtualizarHemocentroRequest request
@@ -52,7 +52,7 @@ public class HemocentroController {
 
     // Criar horário disponível
     @PostMapping("/horarios")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<HorarioDisponivelResponse> criarHorario(
             @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid CriarHorarioDisponivelRequest request
@@ -64,7 +64,7 @@ public class HemocentroController {
 
     // Listar horários por período
     @GetMapping("/horarios")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<List<HorarioDisponivelResponse>> listarHorarios(
             @AuthenticationPrincipal Conta conta,
             @RequestParam LocalDate inicio,
@@ -74,7 +74,6 @@ public class HemocentroController {
     }
 
     @GetMapping("/{id}/horarios")
-    @PreAuthorize("hasRole('ROLE_USUARIO')")
     public ResponseEntity<List<HorarioDisponivelResponse>> listarHorariosDisponiveis(
             @PathVariable Long id,
             @RequestParam LocalDate data
@@ -86,7 +85,7 @@ public class HemocentroController {
 
     // Atualizar horário
     @PutMapping("/horarios/{id}")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<HorarioDisponivelResponse> atualizarHorario(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id,
@@ -97,7 +96,7 @@ public class HemocentroController {
 
     // Remover horário
     @DeleteMapping("/horarios/{id}")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<Void> removerHorario(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
