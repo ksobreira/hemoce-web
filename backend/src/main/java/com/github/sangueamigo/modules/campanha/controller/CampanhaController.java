@@ -30,7 +30,7 @@ public class CampanhaController {
 
     // Listar campanhas do hemocentro autenticado
     @GetMapping("/minhas")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<List<CampanhaResponse>> listarMinhas(
             @AuthenticationPrincipal Conta conta
     ) {
@@ -39,8 +39,15 @@ public class CampanhaController {
 
     // Buscar campanha por id
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
     public ResponseEntity<CampanhaResponse> buscarPorId(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(campanhaService.buscarPublicaPorId(id));
+    }
+
+    @GetMapping("/minhas/{id}")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    public ResponseEntity<CampanhaResponse> buscarMinhaPorId(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
     ) {
@@ -49,7 +56,7 @@ public class CampanhaController {
 
     // Criar campanha
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<CampanhaResponse> criar(
             @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid CriarCampanhaRequest request
@@ -61,7 +68,7 @@ public class CampanhaController {
 
     // Atualizar campanha
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<CampanhaResponse> atualizar(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id,
@@ -72,7 +79,7 @@ public class CampanhaController {
 
     // Remover campanha
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
     public ResponseEntity<Void> remover(
             @AuthenticationPrincipal Conta conta,
             @PathVariable Long id

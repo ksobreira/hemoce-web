@@ -102,6 +102,13 @@ public class CampanhaService {
         return CampanhaResponse.from(buscarCampanhaDoHemocentro(campanhaId, hemocentro.getId()));
     }
 
+    public CampanhaResponse buscarPublicaPorId(Long campanhaId) {
+        Campanha campanha = campanhaRepository.findById(campanhaId)
+                .orElseThrow(CampanhaNaoEncontradaException::new);
+
+        return CampanhaResponse.from(campanha);
+    }
+
     public List<CampanhaResponse> listarDoHemocentro(Long contaId) {
         Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
 
