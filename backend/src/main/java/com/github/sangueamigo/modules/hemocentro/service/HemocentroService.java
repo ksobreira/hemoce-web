@@ -1,8 +1,10 @@
 package com.github.sangueamigo.modules.hemocentro.service;
 
 import com.github.sangueamigo.modules.agendamento.service.AgendamentoService;
+import com.github.sangueamigo.modules.conta.exception.CnpjJaCadastradoException;
 import com.github.sangueamigo.modules.hemocentro.dto.request.AtualizarHemocentroRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.request.AtualizarHorarioDisponivelRequest;
+import com.github.sangueamigo.modules.hemocentro.dto.request.CriarHemocentroRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.request.CriarHorarioDisponivelRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.response.HemocentroResponse;
 import com.github.sangueamigo.modules.hemocentro.dto.response.HorarioDisponivelResponse;
@@ -27,13 +29,26 @@ public class HemocentroService {
     private final HorarioDisponivelRepository horarioDisponivelRepository;
     private final AgendamentoService agendamentoService;
 
-    public HemocentroResponse buscarPerfil(Long contaId) {
-        return HemocentroResponse.from(buscarHemocentroPorContaId(contaId));
+    @Transactional
+    public HemocentroResponse criar(CriarHemocentroRequest request) {
+        if (hemocentroRepository.existsByCnpj(request.cnpj())) {
+            throw new CnpjJaCadastradoException();
+        }
+
+        Hemocentro hemocentro = new Hemocentro();
+        hemocentro.setNome(request.nome());
+        hemocentro.setCnpj(request.cnpj());
+        hemocentro.setTelefone(request.telefone());
+        hemocentro.setEndereco(request.endereco());
+        hemocentro.setCidade(request.cidade());
+        hemocentro.setEstado(request.estado());
+
+        return HemocentroResponse.from(hemocentroRepository.save(hemocentro));
     }
 
     @Transactional
-    public HemocentroResponse atualizarPerfil(Long contaId, AtualizarHemocentroRequest request) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
+    public HemocentroResponse atualizar(Long hemocentroId, AtualizarHemocentroRequest request) {
+        Hemocentro hemocentro = buscarEntidadePorId(hemocentroId);
 
         hemocentro.setNome(request.nome());
         hemocentro.setTelefone(request.telefone());
@@ -45,8 +60,30 @@ public class HemocentroService {
     }
 
     @Transactional
-    public HorarioDisponivelResponse criarHorario(Long contaId, CriarHorarioDisponivelRequest request) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
+    public void remover(Long hemocentroId) {
+        Hemocentro hemocentro = buscarEntidadePorId(hemocentroId);
+        hemocentroRepository.delete(hemocentro);
+    }
+
+    public HemocentroResponse buscarPorId(Long hemocentroId) {
+        return HemocentroResponse.from(buscarEntidadePorId(hemocentroId));
+    }
+
+    public Hemocentro buscarEntidadePorId(Long hemocentroId) {
+        return hemocentroRepository.findById(hemocentroId)
+                .orElseThrow(HemocentroNaoEncontradoException::new);
+    }
+
+    public List<HemocentroResponse> listarTodos() {
+        return hemocentroRepository.findAll()
+                .stream()
+                .map(HemocentroResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public HorarioDisponivelResponse criarHorario(Long hemocentroId, CriarHorarioDisponivelRequest request) {
+        Hemocentro hemocentro = buscarEntidadePorId(hemocentroId);
 
         HorarioDisponivel horario = new HorarioDisponivel();
         horario.setHemocentro(hemocentro);
@@ -60,12 +97,11 @@ public class HemocentroService {
 
     @Transactional
     public HorarioDisponivelResponse atualizarHorario(
-            Long contaId,
+            Long hemocentroId,
             Long horarioId,
             AtualizarHorarioDisponivelRequest request
     ) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-        HorarioDisponivel horario = buscarHorarioDoHemocentro(horarioId, hemocentro.getId());
+        HorarioDisponivel horario = buscarHorarioDoHemocentro(horarioId, hemocentroId);
 
         horario.setData(request.data());
         horario.setHora(request.hora());
@@ -76,9 +112,8 @@ public class HemocentroService {
     }
 
     @Transactional
-    public void removerHorario(Long contaId, Long horarioId) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-        HorarioDisponivel horario = buscarHorarioDoHemocentro(horarioId, hemocentro.getId());
+    public void removerHorario(Long hemocentroId, Long horarioId) {
+        HorarioDisponivel horario = buscarHorarioDoHemocentro(horarioId, hemocentroId);
 
         if (agendamentoService.temAgendamentosAtivosNoHorario(horario.getId())) {
             throw new HorarioComAgendamentosAtivosException();
@@ -87,24 +122,11 @@ public class HemocentroService {
         horarioDisponivelRepository.delete(horario);
     }
 
-    public List<HorarioDisponivelResponse> listarHorarios(Long contaId, LocalDate inicio, LocalDate fim) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-
+    public List<HorarioDisponivelResponse> listarHorarios(Long hemocentroId, LocalDate inicio, LocalDate fim) {
         return horarioDisponivelRepository
-                .findByHemocentroIdAndDataBetween(hemocentro.getId(), inicio, fim)
+                .findByHemocentroIdAndDataBetween(hemocentroId, inicio, fim)
                 .stream()
                 .map(HorarioDisponivelResponse::from)
-                .toList();
-    }
-
-    public Hemocentro buscarEntidadePorContaId(Long contaId) {
-        return buscarHemocentroPorContaId(contaId);
-    }
-
-    public List<HemocentroResponse> listarTodos() {
-        return hemocentroRepository.findAll()
-                .stream()
-                .map(HemocentroResponse::from)
                 .toList();
     }
 
@@ -114,11 +136,6 @@ public class HemocentroService {
                 .stream()
                 .map(HorarioDisponivelResponse::from)
                 .toList();
-    }
-
-    private Hemocentro buscarHemocentroPorContaId(Long contaId) {
-        return hemocentroRepository.findByContaId(contaId)
-                .orElseThrow(HemocentroNaoEncontradoException::new);
     }
 
     private HorarioDisponivel buscarHorarioDoHemocentro(Long horarioId, Long hemocentroId) {

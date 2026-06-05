@@ -2,7 +2,6 @@ package com.github.sangueamigo.modules.conta.entity;
 
 
 import com.github.sangueamigo.modules.conta.enums.Role;
-import com.github.sangueamigo.modules.hemocentro.entity.Hemocentro;
 import com.github.sangueamigo.modules.usuario.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,10 +31,7 @@ public class Conta implements UserDetails {
     private String senha;
 
     @OneToOne(mappedBy = "conta")
-    private Usuario usuario; // null se for hemocentro
-
-    @OneToOne(mappedBy = "conta")
-    private Hemocentro hemocentro; // null se for usuario
+    private Usuario usuario;
 
     @Column
     @Enumerated(EnumType.STRING)

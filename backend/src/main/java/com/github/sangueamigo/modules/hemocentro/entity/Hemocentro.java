@@ -1,6 +1,5 @@
 package com.github.sangueamigo.modules.hemocentro.entity;
 
-import com.github.sangueamigo.modules.conta.entity.Conta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,9 +32,5 @@ public class Hemocentro {
 
     @Column
     private String estado;
-
-    @OneToOne
-    @JoinColumn(name = "conta_id")
-    private Conta conta;
 
 }

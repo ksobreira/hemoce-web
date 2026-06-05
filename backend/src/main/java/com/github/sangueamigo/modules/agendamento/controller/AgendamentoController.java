@@ -6,8 +6,6 @@ import com.github.sangueamigo.modules.agendamento.dto.response.AgendamentoRespon
 import com.github.sangueamigo.modules.agendamento.dto.response.ValidacaoQrCodeResponse;
 import com.github.sangueamigo.modules.agendamento.service.AgendamentoService;
 import com.github.sangueamigo.modules.conta.entity.Conta;
-import com.github.sangueamigo.modules.hemocentro.entity.Hemocentro;
-import com.github.sangueamigo.modules.hemocentro.service.HemocentroService;
 import com.github.sangueamigo.modules.qrcode.QrCodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +25,7 @@ public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
     private final QrCodeService qrCodeService;
-    private final HemocentroService hemocentroService;
 
-    // Criar agendamento
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<AgendamentoResponse> criar(
@@ -41,7 +37,6 @@ public class AgendamentoController {
                 .body(agendamentoService.criar(conta.getId(), request));
     }
 
-    // RF14 Confirmar e gerar QR Code
     @PatchMapping("/{id}/confirmar")
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<AgendamentoResponse> confirmar(
@@ -51,7 +46,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.confirmar(id, conta.getId()));
     }
 
-    // RF05 Cancelar agendamento
     @PatchMapping("/{id}/cancelar")
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<Void> cancelar(
@@ -62,7 +56,6 @@ public class AgendamentoController {
         return ResponseEntity.noContent().build();
     }
 
-    // RF04 Histórico completo do usuário
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<AgendamentoResponse>> listarTodos(
@@ -71,7 +64,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.listarTodosDoUsuario(conta.getId()));
     }
 
-    // RF04 Agendamentos ativos do usuário
     @GetMapping("/ativos")
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<AgendamentoResponse>> listarAtivos(
@@ -80,7 +72,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.listarAtivosDoUsuario(conta.getId()));
     }
 
-    // QR Code em Base64
     @GetMapping("/{id}/qrcode")
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<String> obterQrCode(
@@ -91,25 +82,20 @@ public class AgendamentoController {
         return ResponseEntity.ok(qrCodeService.gerarQrCodeBase64(token));
     }
 
-    // RF15 Validar QR Code (hemocentro)
     @PostMapping("/validar-qrcode")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ValidacaoQrCodeResponse> validarQrCode(
             @RequestBody @Valid ValidarQrCodeRequest request
     ) {
         return ResponseEntity.ok(agendamentoService.validarQrCode(request));
     }
 
-    // RF16/RF17 Painel do hemocentro
-    @GetMapping("/hemocentro")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<AgendamentoResponse>> listarPorHemocentro(
-            @AuthenticationPrincipal Conta conta,
+            @RequestParam Long hemocentroId,
             @RequestParam LocalDate data
     ) {
-        Hemocentro hemocentro = hemocentroService.buscarEntidadePorContaId(conta.getId());
-        return ResponseEntity.ok(
-                agendamentoService.listarPorHemocentro(hemocentro.getId(), data)
-        );
+        return ResponseEntity.ok(agendamentoService.listarPorHemocentro(hemocentroId, data));
     }
 }

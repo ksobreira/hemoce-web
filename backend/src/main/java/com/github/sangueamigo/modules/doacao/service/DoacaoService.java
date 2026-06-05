@@ -4,7 +4,6 @@ import com.github.sangueamigo.modules.agendamento.entity.Agendamento;
 import com.github.sangueamigo.modules.doacao.dto.DoacaoResponse;
 import com.github.sangueamigo.modules.doacao.entity.Doacao;
 import com.github.sangueamigo.modules.doacao.repository.DoacaoRepository;
-import com.github.sangueamigo.modules.hemocentro.entity.Hemocentro;
 import com.github.sangueamigo.modules.hemocentro.exception.HemocentroNaoEncontradoException;
 import com.github.sangueamigo.modules.hemocentro.repository.HemocentroRepository;
 import com.github.sangueamigo.modules.usuario.entity.Usuario;
@@ -25,7 +24,7 @@ public class DoacaoService {
     private final UsuarioRepository usuarioRepository;
     private final HemocentroRepository hemocentroRepository;
 
-    public boolean jaRegistrada(Long agendamentoId){
+    public boolean jaRegistrada(Long agendamentoId) {
         return doacaoRepository.existsByAgendamentoId(agendamentoId);
     }
 
@@ -37,7 +36,6 @@ public class DoacaoService {
         return doacaoRepository.save(doacao);
     }
 
-    // DoacaoService
     public List<DoacaoResponse> listarHistoricoDoUsuario(Long contaId) {
         Usuario usuario = usuarioRepository.findByContaId(contaId)
                 .orElseThrow(UsuarioNaoEncontradoException::new);
@@ -49,15 +47,14 @@ public class DoacaoService {
                 .toList();
     }
 
-    public List<DoacaoResponse> listarHistoricoDoHemocentro(Long contaId) {
-        Hemocentro hemocentro = hemocentroRepository.findByContaId(contaId)
+    public List<DoacaoResponse> listarHistoricoDoHemocentro(Long hemocentroId) {
+        hemocentroRepository.findById(hemocentroId)
                 .orElseThrow(HemocentroNaoEncontradoException::new);
 
         return doacaoRepository
-                .findByAgendamentoHemocentroIdOrderByDataDoacaoDesc(hemocentro.getId())
+                .findByAgendamentoHemocentroIdOrderByDataDoacaoDesc(hemocentroId)
                 .stream()
                 .map(DoacaoResponse::from)
                 .toList();
     }
 }
-

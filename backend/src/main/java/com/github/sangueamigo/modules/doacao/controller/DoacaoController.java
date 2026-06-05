@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,7 +21,6 @@ public class DoacaoController {
 
     private final DoacaoService doacaoService;
 
-    // RF04 Histórico de doações do usuário
     @GetMapping("/historico")
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
     public ResponseEntity<List<DoacaoResponse>> listarHistoricoUsuario(
@@ -29,12 +29,11 @@ public class DoacaoController {
         return ResponseEntity.ok(doacaoService.listarHistoricoDoUsuario(conta.getId()));
     }
 
-    // RF17 Histórico de doações do hemocentro
-    @GetMapping("/hemocentro")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<DoacaoResponse>> listarHistoricoHemocentro(
-            @AuthenticationPrincipal Conta conta
+            @RequestParam Long hemocentroId
     ) {
-        return ResponseEntity.ok(doacaoService.listarHistoricoDoHemocentro(conta.getId()));
+        return ResponseEntity.ok(doacaoService.listarHistoricoDoHemocentro(hemocentroId));
     }
 }

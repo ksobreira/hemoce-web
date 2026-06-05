@@ -1,8 +1,8 @@
 package com.github.sangueamigo.modules.hemocentro.controller;
 
-import com.github.sangueamigo.modules.conta.entity.Conta;
 import com.github.sangueamigo.modules.hemocentro.dto.request.AtualizarHemocentroRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.request.AtualizarHorarioDisponivelRequest;
+import com.github.sangueamigo.modules.hemocentro.dto.request.CriarHemocentroRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.request.CriarHorarioDisponivelRequest;
 import com.github.sangueamigo.modules.hemocentro.dto.response.HemocentroResponse;
 import com.github.sangueamigo.modules.hemocentro.dto.response.HorarioDisponivelResponse;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,52 +24,65 @@ public class HemocentroController {
 
     private final HemocentroService hemocentroService;
 
-    // RF07 Listar hemocentros disponíveis (público)
     @GetMapping
     public ResponseEntity<List<HemocentroResponse>> listar() {
         return ResponseEntity.ok(hemocentroService.listarTodos());
     }
 
-    // Visualizar perfil próprio
-    @GetMapping("/perfil")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
-    public ResponseEntity<HemocentroResponse> buscarPerfil(
-            @AuthenticationPrincipal Conta conta
+    @GetMapping("/{id}")
+    public ResponseEntity<HemocentroResponse> buscarPorId(
+            @PathVariable Long id
     ) {
-        return ResponseEntity.ok(hemocentroService.buscarPerfil(conta.getId()));
+        return ResponseEntity.ok(hemocentroService.buscarPorId(id));
     }
 
-    // Editar perfil
-    @PutMapping("/perfil")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
-    public ResponseEntity<HemocentroResponse> atualizarPerfil(
-            @AuthenticationPrincipal Conta conta,
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<HemocentroResponse> criar(
+            @RequestBody @Valid CriarHemocentroRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(hemocentroService.criar(request));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<HemocentroResponse> atualizar(
+            @PathVariable Long id,
             @RequestBody @Valid AtualizarHemocentroRequest request
     ) {
-        return ResponseEntity.ok(hemocentroService.atualizarPerfil(conta.getId(), request));
+        return ResponseEntity.ok(hemocentroService.atualizar(id, request));
     }
 
-    // Criar horário disponível
-    @PostMapping("/horarios")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> remover(
+            @PathVariable Long id
+    ) {
+        hemocentroService.remover(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/horarios")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<HorarioDisponivelResponse> criarHorario(
-            @AuthenticationPrincipal Conta conta,
+            @PathVariable Long id,
             @RequestBody @Valid CriarHorarioDisponivelRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(hemocentroService.criarHorario(conta.getId(), request));
+                .body(hemocentroService.criarHorario(id, request));
     }
 
-    // Listar horários por período
-    @GetMapping("/horarios")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @GetMapping("/{id}/horarios-periodo")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<HorarioDisponivelResponse>> listarHorarios(
-            @AuthenticationPrincipal Conta conta,
+            @PathVariable Long id,
             @RequestParam LocalDate inicio,
             @RequestParam LocalDate fim
     ) {
-        return ResponseEntity.ok(hemocentroService.listarHorarios(conta.getId(), inicio, fim));
+        return ResponseEntity.ok(hemocentroService.listarHorarios(id, inicio, fim));
     }
 
     @GetMapping("/{id}/horarios")
@@ -78,30 +90,26 @@ public class HemocentroController {
             @PathVariable Long id,
             @RequestParam LocalDate data
     ) {
-        return ResponseEntity.ok(
-                hemocentroService.listarHorariosDisponiveisPorData(id, data)
-        );
+        return ResponseEntity.ok(hemocentroService.listarHorariosDisponiveisPorData(id, data));
     }
 
-    // Atualizar horário
-    @PutMapping("/horarios/{id}")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @PutMapping("/{hemocentroId}/horarios/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<HorarioDisponivelResponse> atualizarHorario(
-            @AuthenticationPrincipal Conta conta,
+            @PathVariable Long hemocentroId,
             @PathVariable Long id,
             @RequestBody @Valid AtualizarHorarioDisponivelRequest request
     ) {
-        return ResponseEntity.ok(hemocentroService.atualizarHorario(conta.getId(), id, request));
+        return ResponseEntity.ok(hemocentroService.atualizarHorario(hemocentroId, id, request));
     }
 
-    // Remover horário
-    @DeleteMapping("/horarios/{id}")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @DeleteMapping("/{hemocentroId}/horarios/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> removerHorario(
-            @AuthenticationPrincipal Conta conta,
+            @PathVariable Long hemocentroId,
             @PathVariable Long id
     ) {
-        hemocentroService.removerHorario(conta.getId(), id);
+        hemocentroService.removerHorario(hemocentroId, id);
         return ResponseEntity.noContent().build();
     }
 }

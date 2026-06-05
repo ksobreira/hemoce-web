@@ -9,7 +9,6 @@ import com.github.sangueamigo.modules.campanha.enums.UrgenciaCampanha;
 import com.github.sangueamigo.modules.campanha.event.CampanhaUrgenciaCriticaEvent;
 import com.github.sangueamigo.modules.campanha.event.DestinatarioCampanhaCritica;
 import com.github.sangueamigo.modules.campanha.exception.CampanhaNaoEncontradaException;
-import com.github.sangueamigo.modules.campanha.exception.CampanhaNaoPertenceAoHemocentroException;
 import com.github.sangueamigo.modules.campanha.exception.PeriodoCampanhaInvalidoException;
 import com.github.sangueamigo.modules.campanha.repository.CampanhaRepository;
 import com.github.sangueamigo.modules.hemocentro.entity.Hemocentro;
@@ -34,8 +33,8 @@ public class CampanhaService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public CampanhaResponse criar(Long contaId, CriarCampanhaRequest request) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
+    public CampanhaResponse criar(CriarCampanhaRequest request) {
+        Hemocentro hemocentro = hemocentroService.buscarEntidadePorId(request.hemocentroId());
         validarPeriodo(request.dataInicio(), request.dataFim());
 
         Campanha campanha = new Campanha();
@@ -46,15 +45,15 @@ public class CampanhaService {
         campanha.setTiposSanguineosNecessarios(request.tiposSanguineosNecessarios());
         campanha.setDataInicio(request.dataInicio());
         campanha.setDataFim(request.dataFim());
-        campanha.setEndereco(request.endereco());
-        campanha.setCidade(request.cidade());
-        campanha.setEstado(request.estado());
+        campanha.setEndereco(valorOuPadrao(request.endereco(), hemocentro.getEndereco()));
+        campanha.setCidade(valorOuPadrao(request.cidade(), hemocentro.getCidade()));
+        campanha.setEstado(valorOuPadrao(request.estado(), hemocentro.getEstado()));
         campanha.setUrgencia(request.urgencia());
         campanha.setStatus(statusInicial(request.dataInicio()));
 
         Campanha salva = campanhaRepository.save(campanha);
 
-        if (salva.getUrgencia() == UrgenciaCampanha.CRITICA){
+        if (salva.getUrgencia() == UrgenciaCampanha.CRITICA) {
             publicarUrgenciaCritica(salva);
         }
 
@@ -62,22 +61,23 @@ public class CampanhaService {
     }
 
     @Transactional
-    public CampanhaResponse atualizar(Long contaId, Long campanhaId, AtualizarCampanhaRequest request) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-        Campanha campanha = buscarCampanhaDoHemocentro(campanhaId, hemocentro.getId());
+    public CampanhaResponse atualizar(Long campanhaId, AtualizarCampanhaRequest request) {
+        Campanha campanha = buscarEntidadePorId(campanhaId);
+        Hemocentro hemocentro = hemocentroService.buscarEntidadePorId(request.hemocentroId());
         validarPeriodo(request.dataInicio(), request.dataFim());
 
         UrgenciaCampanha urgenciaAnterior = campanha.getUrgencia();
 
+        campanha.setHemocentro(hemocentro);
         campanha.setTitulo(request.titulo());
         campanha.setDescricao(request.descricao());
         campanha.setUrlImagem(request.urlImagem());
         campanha.setTiposSanguineosNecessarios(request.tiposSanguineosNecessarios());
         campanha.setDataInicio(request.dataInicio());
         campanha.setDataFim(request.dataFim());
-        campanha.setEndereco(request.endereco());
-        campanha.setCidade(request.cidade());
-        campanha.setEstado(request.estado());
+        campanha.setEndereco(valorOuPadrao(request.endereco(), hemocentro.getEndereco()));
+        campanha.setCidade(valorOuPadrao(request.cidade(), hemocentro.getCidade()));
+        campanha.setEstado(valorOuPadrao(request.estado(), hemocentro.getEstado()));
         campanha.setStatus(request.status());
         campanha.setUrgencia(request.urgencia());
 
@@ -91,28 +91,23 @@ public class CampanhaService {
     }
 
     @Transactional
-    public void remover(Long contaId, Long campanhaId) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-        Campanha campanha = buscarCampanhaDoHemocentro(campanhaId, hemocentro.getId());
-        campanhaRepository.delete(campanha);
+    public void remover(Long campanhaId) {
+        campanhaRepository.delete(buscarEntidadePorId(campanhaId));
     }
 
-    public CampanhaResponse buscarPorId(Long contaId, Long campanhaId) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-        return CampanhaResponse.from(buscarCampanhaDoHemocentro(campanhaId, hemocentro.getId()));
+    public CampanhaResponse buscarPorId(Long campanhaId) {
+        return CampanhaResponse.from(buscarEntidadePorId(campanhaId));
     }
 
-    public CampanhaResponse buscarPublicaPorId(Long campanhaId) {
-        Campanha campanha = campanhaRepository.findById(campanhaId)
-                .orElseThrow(CampanhaNaoEncontradaException::new);
-
-        return CampanhaResponse.from(campanha);
+    public List<CampanhaResponse> listarTodas() {
+        return campanhaRepository.findAll()
+                .stream()
+                .map(CampanhaResponse::from)
+                .toList();
     }
 
-    public List<CampanhaResponse> listarDoHemocentro(Long contaId) {
-        Hemocentro hemocentro = buscarHemocentroPorContaId(contaId);
-
-        return campanhaRepository.findByHemocentroIdOrderByDataInicioDesc(hemocentro.getId())
+    public List<CampanhaResponse> listarPorHemocentro(Long hemocentroId) {
+        return campanhaRepository.findByHemocentroIdOrderByDataInicioDesc(hemocentroId)
                 .stream()
                 .map(CampanhaResponse::from)
                 .toList();
@@ -125,19 +120,9 @@ public class CampanhaService {
                 .toList();
     }
 
-    private Hemocentro buscarHemocentroPorContaId(Long contaId) {
-        return hemocentroService.buscarEntidadePorContaId(contaId);
-    }
-
-    private Campanha buscarCampanhaDoHemocentro(Long campanhaId, Long hemocentroId) {
-        Campanha campanha = campanhaRepository.findById(campanhaId)
+    private Campanha buscarEntidadePorId(Long campanhaId) {
+        return campanhaRepository.findById(campanhaId)
                 .orElseThrow(CampanhaNaoEncontradaException::new);
-
-        if (!campanha.getHemocentro().getId().equals(hemocentroId)) {
-            throw new CampanhaNaoPertenceAoHemocentroException();
-        }
-
-        return campanha;
     }
 
     private void validarPeriodo(LocalDate dataInicio, LocalDate dataFim) {
@@ -148,6 +133,10 @@ public class CampanhaService {
 
     private StatusCampanha statusInicial(LocalDate dataInicio) {
         return dataInicio.isAfter(LocalDate.now()) ? StatusCampanha.AGENDADA : StatusCampanha.ATIVA;
+    }
+
+    private String valorOuPadrao(String valor, String padrao) {
+        return valor == null || valor.isBlank() ? padrao : valor;
     }
 
     private void publicarUrgenciaCritica(Campanha campanha) {

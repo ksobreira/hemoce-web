@@ -28,15 +28,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // RF01 Cadastro de hemocentro
-    @PostMapping("/cadastro-hemocentro")
-    public ResponseEntity<Void> cadastrarHemocentro(
-            @RequestBody @Valid CadastrarHemocentroRequest request
-    ) {
-        contaService.cadastrarHemocentro(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     // RF02 Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(

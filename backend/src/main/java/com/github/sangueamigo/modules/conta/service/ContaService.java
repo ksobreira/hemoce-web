@@ -9,8 +9,6 @@ import com.github.sangueamigo.modules.conta.event.SenhaRecuperacaoSolicitadaEven
 import com.github.sangueamigo.modules.conta.event.UsuarioCadastradoEvent;
 import com.github.sangueamigo.modules.conta.exception.*;
 import com.github.sangueamigo.modules.conta.repository.ContaRepository;
-import com.github.sangueamigo.modules.hemocentro.entity.Hemocentro;
-import com.github.sangueamigo.modules.hemocentro.repository.HemocentroRepository;
 import com.github.sangueamigo.modules.usuario.entity.Usuario;
 import com.github.sangueamigo.modules.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,6 @@ public class ContaService {
 
     private final ContaRepository contaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final HemocentroRepository hemocentroRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -65,33 +62,6 @@ public class ContaService {
         eventPublisher.publishEvent(
                 new UsuarioCadastradoEvent(conta.getEmail(),usuario.getNome())
         );
-    }
-
-    @Transactional
-    public void cadastrarHemocentro(CadastrarHemocentroRequest request) {
-
-        if (contaRepository.findByEmail(request.email()).isPresent()) {
-            throw new EmailJaCadastradoException();
-        }
-
-        if (hemocentroRepository.existsByCnpj(request.cnpj())){
-            throw new CnpjJaCadastradoException();
-        }
-
-        Conta conta = new Conta();
-        conta.setEmail(request.email());
-        conta.setSenha(passwordEncoder.encode(request.senha()));
-        conta.setRole(Role.ROLE_HEMOCENTRO);
-        contaRepository.save(conta);
-
-        Hemocentro hemocentro = new Hemocentro();
-        hemocentro.setNome(request.nome());
-        hemocentro.setTelefone(request.telefone());
-        hemocentro.setEndereco(request.endereco());
-        hemocentro.setCidade(request.cidade());
-        hemocentro.setEstado(request.estado());
-        hemocentro.setConta(conta);
-        hemocentroRepository.save(hemocentro);
     }
 
     // RF02 Login

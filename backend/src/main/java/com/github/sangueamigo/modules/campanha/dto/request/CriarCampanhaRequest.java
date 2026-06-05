@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public record CriarCampanhaRequest(
+        @NotNull Long hemocentroId,
         @NotBlank String titulo,
         @Size(max = 500) String descricao,
         String urlImagem,

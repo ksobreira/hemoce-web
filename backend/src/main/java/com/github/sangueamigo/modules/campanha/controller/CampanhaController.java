@@ -4,13 +4,11 @@ import com.github.sangueamigo.modules.campanha.dto.request.AtualizarCampanhaRequ
 import com.github.sangueamigo.modules.campanha.dto.request.CriarCampanhaRequest;
 import com.github.sangueamigo.modules.campanha.dto.response.CampanhaResponse;
 import com.github.sangueamigo.modules.campanha.service.CampanhaService;
-import com.github.sangueamigo.modules.conta.entity.Conta;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,69 +20,56 @@ public class CampanhaController {
 
     private final CampanhaService campanhaService;
 
-    // RF08 Listar campanhas ativas (público)
     @GetMapping
     public ResponseEntity<List<CampanhaResponse>> listarAtivas() {
         return ResponseEntity.ok(campanhaService.listarAtivas());
     }
 
-    // Listar campanhas do hemocentro autenticado
-    @GetMapping("/minhas")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
-    public ResponseEntity<List<CampanhaResponse>> listarMinhas(
-            @AuthenticationPrincipal Conta conta
-    ) {
-        return ResponseEntity.ok(campanhaService.listarDoHemocentro(conta.getId()));
+    @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<CampanhaResponse>> listarTodas() {
+        return ResponseEntity.ok(campanhaService.listarTodas());
     }
 
-    // Buscar campanha por id
+    @GetMapping("/hemocentro/{hemocentroId}")
+    public ResponseEntity<List<CampanhaResponse>> listarPorHemocentro(
+            @PathVariable Long hemocentroId
+    ) {
+        return ResponseEntity.ok(campanhaService.listarPorHemocentro(hemocentroId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CampanhaResponse> buscarPorId(
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(campanhaService.buscarPublicaPorId(id));
+        return ResponseEntity.ok(campanhaService.buscarPorId(id));
     }
 
-    @GetMapping("/minhas/{id}")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
-    public ResponseEntity<CampanhaResponse> buscarMinhaPorId(
-            @AuthenticationPrincipal Conta conta,
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(campanhaService.buscarPorId(conta.getId(), id));
-    }
-
-    // Criar campanha
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CampanhaResponse> criar(
-            @AuthenticationPrincipal Conta conta,
             @RequestBody @Valid CriarCampanhaRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(campanhaService.criar(conta.getId(), request));
+                .body(campanhaService.criar(request));
     }
 
-    // Atualizar campanha
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CampanhaResponse> atualizar(
-            @AuthenticationPrincipal Conta conta,
             @PathVariable Long id,
             @RequestBody @Valid AtualizarCampanhaRequest request
     ) {
-        return ResponseEntity.ok(campanhaService.atualizar(conta.getId(), id, request));
+        return ResponseEntity.ok(campanhaService.atualizar(id, request));
     }
 
-    // Remover campanha
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_HEMOCENTRO')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> remover(
-            @AuthenticationPrincipal Conta conta,
             @PathVariable Long id
     ) {
-        campanhaService.remover(conta.getId(), id);
+        campanhaService.remover(id);
         return ResponseEntity.noContent().build();
     }
 }

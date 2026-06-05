@@ -34,7 +34,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                             auth.requestMatchers(
                                     "/auth/cadastro-usuario",
-                                    "/auth/cadastro-hemocentro",
                                     "/auth/login",
                                     "/auth/refresh",
                                     "/auth/recuperar-senha",
@@ -43,6 +42,7 @@ public class SecurityConfig {
                                     "/v3/api-docs/**"
                                     ).permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/hemocentros").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/hemocentros/*").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/hemocentros/*/horarios").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/campanhas").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/campanhas/*").permitAll();
