@@ -1,0 +1,467 @@
+/* ==========================================================================
+   ANIMAÇÕES DE ENTRADA (IDENTICAS ÀS DO LOGIN)
+   ========================================================================== */
+
+@keyframes revelarEsquerda {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes revelarCard {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL (CONSISTENTE COM O LOGIN)
+   ========================================================================== */
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--fonte-principal);
+  background-color: #e9f0f8;
+}
+
+/* Metade Esquerda: Imagem com animação de revelação suave */
+.metadeEsquerda {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background-image: url('../../assets/FundoHemoce2.png') !important; 
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  animation: revelarEsquerda 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.backgroundOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(30, 60, 110, 0.4) 0%, rgba(15, 30, 60, 0.6) 100%);
+}
+
+/* Metade Direita: Espaço centralizado para o card */
+.metadeDireita {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-bottom: 85px; /* Abre espaço de segurança para o rodapé flutuante */
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   CARD DE CADASTRO (OTIMIZADO COM CIDADE E SEM ROLAGEM)
+   ========================================================================== */
+.cadastroCard {
+  width: 100%;
+  max-width: 540px; 
+  height: auto;
+  padding: 20px 30px; /* Reduzido o respiro vertical para a caixa encolher */
+  background: #ffffff !important; 
+  border-radius: 24px !important; 
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); 
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  overflow: hidden; /* Garante que nenhuma rolagem apareça no card */
+  opacity: 0;
+  animation: revelarCard 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.container input,
+.container button,
+.container select,
+.container a,
+.container p,
+.container label {
+  font-family: var(--fonte-principal) !important;
+}
+
+.brandHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.logoWrapper {
+  width: 100%;
+  max-width: 150px; /* Logo sutilmente menor para compensar o novo input */
+  margin-bottom: 4px;
+}
+
+.logoImg {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.slogan {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cor-escuro-medium);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* ==========================================================================
+   FORMULÁRIO EM GRID COMPACTO (2 COLUNAS)
+   ========================================================================== */
+.formSection { 
+  width: 100%; 
+}
+
+.form { 
+  width: 100%; 
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 14px; /* Diminuído o gap vertical para segurar a altura */
+  margin-bottom: 14px;
+}
+
+.inputGroup label,
+.inputGroupFull label,
+.inputGroupRh label {
+  display: block;
+  font-size: 0.75rem; /* Fonte compacta e elegante */
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+  margin-bottom: 4px;
+}
+
+.inputGroup input,
+.inputGroupFull input,
+.inputGroup select {
+  width: 100%;
+  padding: 10px 12px; /* Inputs mais baixos na altura */
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px !important;
+  color: var(--cor-escuro-total);
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Estilização do Select do Tipo Sanguíneo */
+.inputGroup select {
+  cursor: pointer;
+  height: 40px; /* Ajustado para bater com a altura dos inputs */
+}
+
+.inputGroup input:focus,
+.inputGroupFull input:focus,
+.inputGroup select:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.08);
+}
+
+/* Controle de colunas */
+.inputGroup {
+  grid-column: span 1; /* Ocupa 1 coluna */
+}
+
+.inputGroupFull {
+  grid-column: span 2; /* Ocupa as 2 colunas */
+}
+
+/* ==========================================================================
+   COMPONENTE TOGGLE SWITCH (FATOR RH COMPACTO)
+   ========================================================================== */
+.inputGroupRh {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.switchContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px !important;
+  height: 40px; /* Alinhado com a altura padrão dos inputs */
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.labelRh {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #a0aec0;
+  transition: color 0.2s ease;
+}
+
+.rhAtivo {
+  color: var(--cor-escuro-total);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .3s;
+  border-radius: 20px !important;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.switch input:checked + .slider {
+  background-color: var(--cor-primaria);
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+.switch input:disabled + .slider {
+  background-color: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.switch input:disabled + .slider:before {
+  background-color: #cbd5e1;
+}
+
+/* Botão Enviar Cadastro */
+.btnCadastrar {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnCadastrar:hover {
+  background-color: #b31419;
+}
+
+.formFooter {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--cor-escuro-medium);
+}
+
+.linkDestaque { 
+  color: var(--cor-primaria); 
+  font-weight: 700; 
+  text-decoration: none; 
+}
+
+.linkDestaque:hover { 
+  text-decoration: underline; 
+}
+
+/* ==========================================================================
+   RODAPÉ FLUTUANTE TRANSPARENTE
+   ========================================================================== */
+.rodapeFlutuante {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 15;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.secaoEsquerda, 
+.secaoDireita {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+}
+
+.secaoEsquerda { 
+  gap: 20px; 
+}
+
+.btnSobreNosIsolado {
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 30px !important;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btnSobreNosIsolado:hover {
+  background-color: #b31419;
+  transform: translateY(-2px);
+}
+
+.copyright {
+  font-size: 0.8rem;
+  color: #ffffff;
+  opacity: 0.9;
+  margin: 0;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.secaoDireita { 
+  gap: 15px; 
+}
+
+.sigaNos {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+  opacity: 0.8;
+}
+
+.socialIcons { 
+  display: flex; 
+  gap: 15px; 
+}
+
+.socialIcons a {
+  font-size: 1.3rem;
+  color: var(--cor-escuro-medium);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.socialIcons a:hover {
+  opacity: 1;
+  color: var(--cor-primaria);
+  transform: scale(1.15);
+}
+
+/* ==========================================================================
+   ESTILOS DO MODAL
+   ========================================================================== */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+
+.modalContent {
+  background: #ffffff; border-radius: 20px; width: 90%; max-width: 500px; padding: 30px; position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalFechar { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #a0aec0; }
+.modalBody { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.modalTexto h3 { margin: 0 0 8px 0; color: var(--cor-escuro-total); font-size: 1.2rem; }
+.modalTexto p { margin: 0; color: var(--cor-escuro-medium); font-size: 0.88rem; line-height: 1.5; }
+
+/* ==========================================================================
+   RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS
+   ========================================================================== */
+@media (max-width: 992px) {
+  .container { 
+    flex-direction: column; 
+    height: auto; 
+    overflow-y: auto; 
+  }
+  
+  .metadeEsquerda { 
+    display: none; 
+  }
+  
+  .metadeDireita { 
+    width: 100%; 
+    padding: 20px 15px; 
+  }
+  
+  .cadastroCard { 
+    max-width: 100%; 
+    padding: 20px; 
+    overflow: visible; 
+  }
+  
+  .formGrid { 
+    grid-template-columns: 1fr; 
+    gap: 10px; 
+  } 
+  
+  .inputGroup, 
+  .inputGroupFull,
+  .inputGroupRh { 
+    grid-column: span 2; 
+  }
+  
+  .rodapeFlutuante {
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    text-align: center;
+    pointer-events: auto;
+  }
+  
+  .secaoEsquerda, 
+  .secaoDireita { 
+    flex-direction: column; 
+    gap: 10px; 
+  }
+  
+  .copyright, 
+  .sigaNos { 
+    color: var(--cor-escuro-medium) !important; 
+    text-shadow: none; 
+    white-space: normal; 
+  }
+}

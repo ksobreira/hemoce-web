@@ -1,0 +1,477 @@
+/*LAYOUT PRINCIPAL 50/50 TRAVADO NA TELA*/
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--fonte-principal);
+  background-color: #e9f0f8;
+}
+
+@keyframes revelarEsquerda {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes revelarCard {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Metade Esquerda: Foto real fundoHemoce */
+.metadeEsquerda {
+  width: 65%;
+  height: 100%;
+  position: relative;
+  background-image: url('../../assets/FundoHemoce.png') !important; 
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  animation: revelarEsquerda 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.backgroundOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(30, 60, 110, 0.4) 0%, rgba(15, 30, 60, 0.6) 100%);
+}
+
+/* Metade Direita com compensação de espaço */
+.metadeDireita {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  padding-bottom: 90px; /* Margem interna para o card não ficar colado sobre o rodapé */
+  box-sizing: border-box;
+}
+
+/*Login card*/
+.loginCard {
+  width: 100%;
+  max-width: 480px; 
+  height: auto;
+  padding: 40px;     
+  background: #ffffff !important; 
+  border-radius: 24px !important; 
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); 
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  opacity: 0;
+  animation: revelarCard 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.container input,
+.container button,
+.container select,
+.container a,
+.container h2,
+.container p,
+.container label {
+  font-family: var(--fonte-principal) !important;
+}
+
+.brandHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.logoWrapper {
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: 10px;
+}
+
+.logoImg {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.slogan {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--cor-escuro-medium);
+  opacity: 0.7;
+}
+
+/* Formulário e Inputs */
+.formSection { width: 100%; }
+.form { width: 100%; }
+.inputGroup { margin-bottom: 18px; }
+.labelRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+.inputGroup label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px !important;
+  color: var(--cor-escuro-total);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.inputGroup input:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.08);
+}
+
+.forgotPassword {
+  font-size: 0.8rem;
+  color: var(--cor-primaria);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgotPassword:hover { text-decoration: underline; }
+
+.btnEntrar {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px !important;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 5px;
+}
+
+.btnEntrar:hover {
+  background-color: #b31419;
+}
+
+.formFooter {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.88rem;
+  color: var(--cor-escuro-medium);
+}
+
+.linkDestaque { color: var(--cor-primaria); font-weight: 700; text-decoration: none; }
+.linkDestaque:hover { text-decoration: underline; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+.divider:not(:empty)::before { margin-right: .75em; }
+.divider:not(:empty)::after { margin-left: .75em; }
+
+.adminLink {
+  font-size: 0.85rem;
+  color: var(--cor-escuro-medium);
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+/*Estilos do "modal" */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalFechar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #a0aec0;
+}
+
+.modalBody { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.modalTexto h3 { margin: 0 0 8px 0; color: var(--cor-escuro-total); font-size: 1.2rem; }
+.modalTexto p { margin: 0; color: var(--cor-escuro-medium); font-size: 0.88rem; line-height: 1.5; }
+
+.githubLink {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  transition: all 0.2s ease;
+}
+.githubLink:hover { background-color: #e2e8f0; transform: scale(1.06); }
+.githubIcon { font-size: 40px; color: #1a1a1a; }
+
+/*Estrturua do rodapé */
+
+.rodapeFlutuante {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  padding: 25px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 15;
+  box-sizing: border-box;
+  pointer-events: none; /* Evita que a div intercepte cliques indesejados */
+}
+
+.secaoEsquerda, 
+.secaoDireita {
+  pointer-events: auto; 
+  display: flex;
+  align-items: center;
+}
+
+/* LADO ESQUERDO: Botão e Direitos Autorais */
+.secaoEsquerda {
+  gap: 20px;
+}
+
+.btnSobreNosIsolado {
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 30px !important;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.3);
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btnSobreNosIsolado:hover {
+  background-color: #b31419;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(227, 30, 36, 0.45);
+}
+
+.copyright {
+  font-size: 0.82rem;
+  color: #ffffff;
+  opacity: 0.9;
+  margin: 0;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* LADO DIREITO: Redes Sociais */
+.secaoDireita {
+  gap: 15px;
+}
+
+.sigaNos {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 15px;
+}
+
+.socialIcons a {
+  font-size: 1.4rem;
+  color: var(--cor-escuro-medium);
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.socialIcons a:hover {
+  opacity: 1;
+  color: var(--cor-primaria);
+  transform: scale(1.18);
+}
+
+/* ==========================================================================
+   AJUSTES DO BOTÃO ESQUECEU SENHA (DENTRO DA LABEL)
+   ========================================================================== */
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.esqueceuSenhaBtn {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cor-primaria);
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 6px;
+  text-decoration: none;
+  font-family: var(--fonte-principal) !important;
+  transition: color 0.2s ease;
+}
+
+.esqueceuSenhaBtn:hover {
+  text-decoration: underline;
+  color: #b31419;
+}
+
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS DO POP-UP DE RECUPERAÇÃO DE SENHA
+   ========================================================================== */
+.modalBodyVertical {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+}
+
+.modalBodyVertical h3 {
+  margin: 0 0 10px 0;
+  color: var(--cor-escuro-total);
+  font-size: 1.3rem;
+}
+
+.modalBodyVertical p {
+  margin: 0 0 20px 0;
+  color: var(--cor-escuro-medium);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.inputGroupModal {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroupModal label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cor-escuro-total);
+  margin-bottom: 6px;
+}
+
+.inputGroupModal input {
+  width: 100%;
+  padding: 12px 14px;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px !important;
+  color: var(--cor-escuro-total);
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.inputGroupModal input:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.08);
+}
+
+.btnEnviarRecuperacao {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnEnviarRecuperacao:hover {
+  background-color: #b31419;
+}
+
+
+/*Responsividade mobile*/
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+  
+  .metadeEsquerda { display: none; }
+  .metadeDireita { width: 100%; padding: 40px 15px; padding-bottom: 20px !important; }
+  .loginCard { max-width: 100%; padding: 30px 20px; }
+
+  .rodapeFlutuante {
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    text-align: center;
+    pointer-events: auto;
+  }
+  
+  .secaoEsquerda, 
+  .secaoDireita {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .copyright, 
+  .sigaNos {
+    color: var(--cor-escuro-medium) !important;
+    text-shadow: none;
+    white-space: normal;
+  }
+}
+
