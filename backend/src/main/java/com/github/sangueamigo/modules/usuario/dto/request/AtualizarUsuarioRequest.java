@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public record AtualizarUsuarioRequest(
         @NotBlank String nome,
         String telefone,
+        String cidade,
         @NotNull LocalDate dataNascimento,
         @NotNull TipoSanguineo tipoSanguineo,
         @NotNull Sexo sexo

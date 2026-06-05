@@ -31,6 +31,7 @@ public class UsuarioService {
 
         usuario.setNome(request.nome());
         usuario.setTelefone(request.telefone());
+        usuario.setCidade(request.cidade());
         usuario.setDataNascimento(request.dataNascimento());
         usuario.setTipoSanguineo(request.tipoSanguineo());
         usuario.setSexo(request.sexo());

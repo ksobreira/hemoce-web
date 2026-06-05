@@ -53,6 +53,7 @@ public class ContaService {
         usuario.setNome(request.nome());
         usuario.setCpf(request.cpf());
         usuario.setTelefone(request.telefone());
+        usuario.setCidade(request.cidade());
         usuario.setDataNascimento(request.dataNascimento());
         usuario.setTipoSanguineo(request.tipoSanguineo());
         usuario.setSexo(request.sexo());

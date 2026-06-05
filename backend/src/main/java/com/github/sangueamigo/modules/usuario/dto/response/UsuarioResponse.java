@@ -10,6 +10,7 @@ public record UsuarioResponse(
         String cpf,
         String email,
         String telefone,
+        String cidade,
         LocalDate dataNascimento,
         String tipoSanguineo,
         String sexo
@@ -21,6 +22,7 @@ public record UsuarioResponse(
                 usuario.getCpf(),
                 usuario.getConta().getEmail(),
                 usuario.getTelefone(),
+                usuario.getCidade(),
                 usuario.getDataNascimento(),
                 usuario.getTipoSanguineo().name(),
                 usuario.getSexo().name()

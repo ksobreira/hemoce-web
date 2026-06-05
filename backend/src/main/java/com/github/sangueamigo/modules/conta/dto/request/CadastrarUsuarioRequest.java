@@ -17,6 +17,7 @@ public record CadastrarUsuarioRequest(
         @NotNull    LocalDate dataNascimento,
         @NotNull    TipoSanguineo tipoSanguineo,
         @NotNull    Sexo sexo,
-                    String telefone
+                    String telefone,
+                    String cidade
 ) {
 }

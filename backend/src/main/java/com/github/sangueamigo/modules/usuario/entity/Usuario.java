@@ -29,6 +29,9 @@ public class Usuario {
     @Column
     private String telefone;
 
+    @Column
+    private String cidade;
+
     @Column(nullable = false)
     private LocalDate dataNascimento;
 
