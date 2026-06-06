@@ -213,3 +213,29 @@
     width: 100%;
   }
 }
+
+.errorBox {
+  background-color: #fff0f0;
+  color: #b9151a;
+  border: 1px solid #f5b5b5;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.errorText {
+  color: #b9151a;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.helpText {
+  color: #666666;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.5;
+}

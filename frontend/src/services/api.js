@@ -123,4 +123,28 @@ export const hemocentrosService = {
   buscarHemocentroPorId(id) {
     return api.get(`/hemocentros/${id}`);
   },
+
+  listarHorariosPorData(hemocentroId, data) {
+    return api.get(`/hemocentros/${hemocentroId}/horarios?data=${data}`);
+  },
+};
+
+export const agendamentosService = {
+  listarAgendamentos() {
+    return api.get("/agendamentos");
+  },
+
+  listarAgendamentosAtivos() {
+    return api.get("/agendamentos/ativos");
+  },
+
+  criarAgendamento(horarioId) {
+    return api.post("/agendamentos", {
+      horarioId,
+    });
+  },
+
+  cancelarAgendamento(id) {
+    return api.patch(`/agendamentos/${id}/cancelar`);
+  },
 };
