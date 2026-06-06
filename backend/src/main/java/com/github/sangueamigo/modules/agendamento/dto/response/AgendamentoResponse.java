@@ -10,7 +10,6 @@ public record AgendamentoResponse(
         LocalDate data,
         LocalTime horario,
         String status,
-        String qrCodeToken,
         String nomeHemocentro,
         String enderecoHemocentro
 ) {
@@ -20,7 +19,6 @@ public record AgendamentoResponse(
                 a.getData(),
                 a.getHorario(),
                 a.getStatus().name(),
-                a.getQrCodeToken(),
                 a.getHemocentro().getNome(),
                 a.getHemocentro().getEndereco()
         );

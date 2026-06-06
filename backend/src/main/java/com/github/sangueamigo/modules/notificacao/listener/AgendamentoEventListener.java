@@ -22,8 +22,7 @@ public class AgendamentoEventListener {
                 event.nomeUsuario(),
                 event.nomeHemocentro(),
                 event.data(),
-                event.horario(),
-                event.qrCodeToken()
+                event.horario()
         );
     }
 

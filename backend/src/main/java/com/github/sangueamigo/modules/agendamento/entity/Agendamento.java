@@ -39,9 +39,6 @@ public class Agendamento {
     @Column(nullable = false)
     private StatusAgendamento status = StatusAgendamento.PENDENTE;
 
-    @Column(unique = true)
-    private String qrCodeToken;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
@@ -55,5 +52,5 @@ public class Agendamento {
     private HorarioDisponivel horarioDisponivel;
 
     @OneToOne(mappedBy = "agendamento", cascade = CascadeType.ALL)
-    private Doacao doacao; // null ate validacao do Qr code
+    private Doacao doacao;
 }

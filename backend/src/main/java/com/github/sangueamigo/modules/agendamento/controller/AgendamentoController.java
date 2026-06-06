@@ -1,12 +1,10 @@
 package com.github.sangueamigo.modules.agendamento.controller;
 
 import com.github.sangueamigo.modules.agendamento.dto.request.CriarAgendamentoRequest;
-import com.github.sangueamigo.modules.agendamento.dto.request.ValidarQrCodeRequest;
+import com.github.sangueamigo.modules.agendamento.dto.request.AtualizarStatusAgendamentoRequest;
 import com.github.sangueamigo.modules.agendamento.dto.response.AgendamentoResponse;
-import com.github.sangueamigo.modules.agendamento.dto.response.ValidacaoQrCodeResponse;
 import com.github.sangueamigo.modules.agendamento.service.AgendamentoService;
 import com.github.sangueamigo.modules.conta.entity.Conta;
-import com.github.sangueamigo.modules.qrcode.QrCodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +22,6 @@ import java.util.List;
 public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
-    private final QrCodeService qrCodeService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_USUARIO')")
@@ -35,15 +32,6 @@ public class AgendamentoController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(agendamentoService.criar(conta.getId(), request));
-    }
-
-    @PatchMapping("/{id}/confirmar")
-    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
-    public ResponseEntity<AgendamentoResponse> confirmar(
-            @AuthenticationPrincipal Conta conta,
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(agendamentoService.confirmar(id, conta.getId()));
     }
 
     @PatchMapping("/{id}/cancelar")
@@ -72,22 +60,13 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.listarAtivosDoUsuario(conta.getId()));
     }
 
-    @GetMapping("/{id}/qrcode")
-    @PreAuthorize("hasAuthority('ROLE_USUARIO')")
-    public ResponseEntity<String> obterQrCode(
-            @AuthenticationPrincipal Conta conta,
-            @PathVariable Long id
-    ) {
-        String token = agendamentoService.buscarQrCodeToken(id, conta.getId());
-        return ResponseEntity.ok(qrCodeService.gerarQrCodeBase64(token));
-    }
-
-    @PostMapping("/validar-qrcode")
+    @PatchMapping("/admin/{id}/status")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<ValidacaoQrCodeResponse> validarQrCode(
-            @RequestBody @Valid ValidarQrCodeRequest request
+    public ResponseEntity<AgendamentoResponse> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody @Valid AtualizarStatusAgendamentoRequest request
     ) {
-        return ResponseEntity.ok(agendamentoService.validarQrCode(request));
+        return ResponseEntity.ok(agendamentoService.atualizarStatus(id, request.status()));
     }
 
     @GetMapping("/admin")

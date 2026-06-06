@@ -14,3 +14,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Local agent instructions
+AGENTS.md
+**/AGENTS.md

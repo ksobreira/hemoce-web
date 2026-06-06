@@ -1,9 +1,7 @@
 package com.github.sangueamigo.modules.agendamento.service;
 
-import com.github.sangueamigo.modules.agendamento.dto.response.AgendamentoResponse;
 import com.github.sangueamigo.modules.agendamento.dto.request.CriarAgendamentoRequest;
-import com.github.sangueamigo.modules.agendamento.dto.response.ValidacaoQrCodeResponse;
-import com.github.sangueamigo.modules.agendamento.dto.request.ValidarQrCodeRequest;
+import com.github.sangueamigo.modules.agendamento.dto.response.AgendamentoResponse;
 import com.github.sangueamigo.modules.agendamento.entity.Agendamento;
 import com.github.sangueamigo.modules.agendamento.enums.StatusAgendamento;
 import com.github.sangueamigo.modules.agendamento.event.AgendamentoCanceladoEvent;
@@ -27,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,15 +36,13 @@ public class AgendamentoService {
     private final DoacaoService doacaoService;
     private final ApplicationEventPublisher eventPublisher;
 
-
-    // RF03, RF06, RF20
     @Transactional
-    public AgendamentoResponse criar(Long contaId, CriarAgendamentoRequest request){
+    public AgendamentoResponse criar(Long contaId, CriarAgendamentoRequest request) {
         Usuario usuario = usuarioRepository.findByContaId(contaId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado"));
 
         HorarioDisponivel horario = horarioRepository.findById(request.horarioId())
-                .orElseThrow(() -> new HorarioIndisponivelException());
+                .orElseThrow(HorarioIndisponivelException::new);
 
         validarDisponibilidadeHorario(horario);
         validarIntervaloMinimo(usuario);
@@ -60,111 +55,57 @@ public class AgendamentoService {
         agendamento.setHorario(horario.getHora());
         agendamento.setStatus(StatusAgendamento.PENDENTE);
 
-        agendamentoRepository.save(agendamento);
-
-        atualizarVagasHorario(horario);
-
-        return AgendamentoResponse.from(agendamento);
-
-    }
-
-    // RF14
-    @Transactional
-    public AgendamentoResponse confirmar(Long agendamentoId, Long contaId) {
-
-        Agendamento agendamento = buscarPorIdEValidarDono(agendamentoId, contaId);
-
-        if (agendamento.getStatus() != StatusAgendamento.PENDENTE) {
-            throw new IllegalStateException(
-                    "Apenas agendamentos PENDENTES podem ser confirmados."
-            );
-        }
-
-        agendamento.setStatus(StatusAgendamento.CONFIRMADO);
-        agendamento.setQrCodeToken(UUID.randomUUID().toString());
-
         Agendamento salvo = agendamentoRepository.save(agendamento);
-        eventPublisher.publishEvent(new AgendamentoConfirmadoEvent(
-                salvo.getUsuario().getConta().getEmail(),
-                salvo.getUsuario().getNome(),
-                salvo.getHemocentro().getNome(),
-                salvo.getData(),
-                salvo.getHorario(),
-                salvo.getQrCodeToken()
-        ));
-
+        atualizarVagasHorario(horario);
         return AgendamentoResponse.from(salvo);
     }
 
-    //RF05
     @Transactional
     public void cancelar(Long agendamentoId, Long contaId) {
-
         Agendamento agendamento = buscarPorIdEValidarDono(agendamentoId, contaId);
 
         if (agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
-            throw new IllegalStateException(
-                    "Agendamentos concluídos não podem ser cancelados."
-            );
+            throw new IllegalStateException("Agendamentos concluidos nao podem ser cancelados.");
         }
         if (agendamento.getStatus() == StatusAgendamento.CANCELADO) {
-            throw new IllegalStateException("Agendamento já cancelado.");
+            throw new IllegalStateException("Agendamento ja cancelado.");
         }
 
         agendamento.setStatus(StatusAgendamento.CANCELADO);
         agendamentoRepository.save(agendamento);
-
-        // Devolve a vaga ao horário
         devolverVaga(agendamento.getHorarioDisponivel());
-        eventPublisher.publishEvent(new AgendamentoCanceladoEvent(
-                agendamento.getUsuario().getConta().getEmail(),
-                agendamento.getUsuario().getNome(),
-                agendamento.getHemocentro().getNome(),
-                agendamento.getData(),
-                agendamento.getHorario()
-        ));
+        publicarCancelamento(agendamento);
     }
 
     @Transactional
-    public ValidacaoQrCodeResponse validarQrCode(ValidarQrCodeRequest request) {
+    public AgendamentoResponse atualizarStatus(Long agendamentoId, StatusAgendamento novoStatus) {
+        Agendamento agendamento = agendamentoRepository.findById(agendamentoId)
+                .orElseThrow(() -> new AgendamentoNaoEncontradoException(agendamentoId));
 
-        Agendamento agendamento = agendamentoRepository
-                .findByQrCodeToken(request.qrCodeToken())
-                .orElseThrow(QrCodeInvalidoException::new);
+        StatusAgendamento statusAtual = agendamento.getStatus();
+        validarTransicaoStatus(statusAtual, novoStatus);
 
-        if (agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
-            throw new QrCodeInvalidoException();
+        if (statusAtual == novoStatus) {
+            return AgendamentoResponse.from(agendamento);
         }
 
-        if (doacaoService.jaRegistrada(agendamento.getId())) {
-            throw new DoacaoJaRegistradaException();
+        switch (novoStatus) {
+            case CONFIRMADO -> publicarConfirmacao(agendamento);
+            case CANCELADO -> {
+                devolverVaga(agendamento.getHorarioDisponivel());
+                publicarCancelamento(agendamento);
+            }
+            case CONCLUIDO -> registrarDoacao(agendamento);
+            case PENDENTE -> throw new IllegalStateException("Nao e permitido retornar um agendamento para PENDENTE.");
         }
 
-        Doacao doacao = doacaoService.registrar(agendamento);
-
-        agendamento.setStatus(StatusAgendamento.CONCLUIDO);
-        agendamentoRepository.save(agendamento);
-
-        Usuario usuario = agendamento.getUsuario();
-        eventPublisher.publishEvent(new DoacaoRegistradaEvent(
-                usuario.getConta().getEmail(),
-                usuario.getNome(),
-                agendamento.getHemocentro().getNome(),
-                doacao.getDataDoacao()
-        ));
-
-        return new ValidacaoQrCodeResponse(
-                doacao.getId(),
-                usuario.getNome(),
-                usuario.getTipoSanguineo().name(),
-                doacao.getDataDoacao()
-        );
+        agendamento.setStatus(novoStatus);
+        return AgendamentoResponse.from(agendamentoRepository.save(agendamento));
     }
 
-    // RF04 Consultas de histórico
     public List<AgendamentoResponse> listarTodosDoUsuario(Long contaId) {
         Usuario usuario = usuarioRepository.findByContaId(contaId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado."));
 
         return agendamentoRepository
                 .findByUsuarioIdOrderByDataDesc(usuario.getId())
@@ -175,7 +116,7 @@ public class AgendamentoService {
 
     public List<AgendamentoResponse> listarAtivosDoUsuario(Long contaId) {
         Usuario usuario = usuarioRepository.findByContaId(contaId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado."));
 
         return agendamentoRepository
                 .findByUsuarioIdAndStatusIn(
@@ -187,7 +128,6 @@ public class AgendamentoService {
                 .toList();
     }
 
-    // RF16/RF17 Painel do hemocentro
     public List<AgendamentoResponse> listarPorHemocentro(Long hemocentroId, LocalDate data) {
         return agendamentoRepository
                 .findByHemocentroIdAndDataOrderByHorario(hemocentroId, data)
@@ -200,25 +140,63 @@ public class AgendamentoService {
         return agendamentoRepository.countAgendamentosAtivosNoHorario(horarioId) > 0;
     }
 
-    public String buscarQrCodeToken(Long agendamentoId, Long contaId) {
-        Agendamento agendamento = buscarPorIdEValidarDono(agendamentoId, contaId);
-
-        if (agendamento.getQrCodeToken() == null) {
-            throw new IllegalStateException("Agendamento ainda não foi confirmado.");
+    private void validarTransicaoStatus(StatusAgendamento atual, StatusAgendamento novo) {
+        if (atual == novo) {
+            return;
         }
-
-        return agendamento.getQrCodeToken();
+        if (atual == StatusAgendamento.CANCELADO || atual == StatusAgendamento.CONCLUIDO) {
+            throw new IllegalStateException("O status deste agendamento nao pode mais ser alterado.");
+        }
+        if (novo == StatusAgendamento.CONFIRMADO && atual != StatusAgendamento.PENDENTE) {
+            throw new IllegalStateException("Apenas agendamentos pendentes podem ser confirmados.");
+        }
+        if (novo == StatusAgendamento.CONCLUIDO && atual != StatusAgendamento.CONFIRMADO) {
+            throw new IllegalStateException("Apenas agendamentos confirmados podem ser concluidos.");
+        }
     }
 
-    // Metodos de validacao
-    private void validarDisponibilidadeHorario(HorarioDisponivel horario){
-        if (!horario.getDisponivel()){
+    private void registrarDoacao(Agendamento agendamento) {
+        if (doacaoService.jaRegistrada(agendamento.getId())) {
+            throw new DoacaoJaRegistradaException();
+        }
+
+        Doacao doacao = doacaoService.registrar(agendamento);
+        Usuario usuario = agendamento.getUsuario();
+        eventPublisher.publishEvent(new DoacaoRegistradaEvent(
+                usuario.getConta().getEmail(),
+                usuario.getNome(),
+                agendamento.getHemocentro().getNome(),
+                doacao.getDataDoacao()
+        ));
+    }
+
+    private void publicarConfirmacao(Agendamento agendamento) {
+        eventPublisher.publishEvent(new AgendamentoConfirmadoEvent(
+                agendamento.getUsuario().getConta().getEmail(),
+                agendamento.getUsuario().getNome(),
+                agendamento.getHemocentro().getNome(),
+                agendamento.getData(),
+                agendamento.getHorario()
+        ));
+    }
+
+    private void publicarCancelamento(Agendamento agendamento) {
+        eventPublisher.publishEvent(new AgendamentoCanceladoEvent(
+                agendamento.getUsuario().getConta().getEmail(),
+                agendamento.getUsuario().getNome(),
+                agendamento.getHemocentro().getNome(),
+                agendamento.getData(),
+                agendamento.getHorario()
+        ));
+    }
+
+    private void validarDisponibilidadeHorario(HorarioDisponivel horario) {
+        if (!horario.getDisponivel()) {
             throw new HorarioIndisponivelException();
         }
 
         long vagasOcupadas = agendamentoRepository.countAgendamentosAtivosNoHorario(horario.getId());
-
-        if (vagasOcupadas >= horario.getVagas()){
+        if (vagasOcupadas >= horario.getVagas()) {
             throw new HorarioIndisponivelException();
         }
     }
@@ -229,9 +207,9 @@ public class AgendamentoService {
                         usuario.getId(), StatusAgendamento.CONCLUIDO
                 );
 
-        ultima.ifPresent(ag -> {
+        ultima.ifPresent(agendamento -> {
             int diasMinimos = usuario.getSexo() == Sexo.MASCULINO ? 60 : 90;
-            LocalDate liberadoEm = ag.getData().plusDays(diasMinimos);
+            LocalDate liberadoEm = agendamento.getData().plusDays(diasMinimos);
 
             if (LocalDate.now().isBefore(liberadoEm)) {
                 throw new UsuarioInaptoException(liberadoEm);
@@ -240,9 +218,7 @@ public class AgendamentoService {
     }
 
     private void atualizarVagasHorario(HorarioDisponivel horario) {
-        long vagasOcupadas = agendamentoRepository
-                .countAgendamentosAtivosNoHorario(horario.getId());
-
+        long vagasOcupadas = agendamentoRepository.countAgendamentosAtivosNoHorario(horario.getId());
         if (vagasOcupadas >= horario.getVagas()) {
             horario.setDisponivel(false);
             horarioRepository.save(horario);
@@ -266,5 +242,4 @@ public class AgendamentoService {
             horarioRepository.save(horario);
         }
     }
-
 }
