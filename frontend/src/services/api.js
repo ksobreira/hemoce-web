@@ -88,3 +88,29 @@ export const authService = {
     return api.post("/auth/cadastro-usuario", dados);
   },
 };
+
+export const campanhasService = {
+  listarCampanhas() {
+    return api.get("/campanhas");
+  },
+
+  buscarCampanhaPorId(id) {
+    return api.get(`/campanhas/${id}`);
+  },
+
+  listarCampanhasAdmin() {
+    return api.get("/campanhas/admin");
+  },
+
+  criarCampanha(dados) {
+    return api.post("/campanhas", dados);
+  },
+
+  atualizarCampanha(id, dados) {
+    return api.put(`/campanhas/${id}`, dados);
+  },
+
+  excluirCampanha(id) {
+    return api.delete(`/campanhas/${id}`);
+  },
+};
