@@ -114,3 +114,13 @@ export const campanhasService = {
     return api.delete(`/campanhas/${id}`);
   },
 };
+
+export const hemocentrosService = {
+  listarHemocentros() {
+    return api.get("/hemocentros");
+  },
+
+  buscarHemocentroPorId(id) {
+    return api.get(`/hemocentros/${id}`);
+  },
+};

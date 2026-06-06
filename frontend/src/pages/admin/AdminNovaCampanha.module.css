@@ -1,0 +1,246 @@
+.page {
+  min-height: calc(100vh - 78px);
+  background-color: var(--bg-principal);
+  padding: 52px 24px 70px;
+  font-family: var(--fonte-principal);
+}
+
+.pageHeader {
+  max-width: 900px;
+  margin: 0 auto 30px;
+}
+
+.backButton {
+  border: none;
+  background-color: transparent;
+  color: var(--cor-primaria);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 22px;
+  padding: 0;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: var(--cor-primaria);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.pageHeader h1 {
+  color: var(--cor-escuro-total);
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.pageHeader p {
+  color: var(--cor-escuro-medium);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.contentWrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.formCard {
+  background-color: var(--bg-card);
+  border: 1px solid #eeeeee;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.045);
+  padding: 28px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  color: var(--cor-escuro-total);
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: var(--cor-escuro-total);
+  font-family: var(--fonte-principal);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formGroup input,
+.formGroup select {
+  height: 46px;
+  padding: 0 14px;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 120px;
+  padding: 14px;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.08);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.checkboxItem {
+  height: 42px;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+  transition: all 0.2s ease;
+}
+
+.checkboxItem:hover {
+  border-color: var(--cor-primaria);
+  background-color: #fffafa;
+}
+
+.checkboxItem input {
+  width: auto;
+  height: auto;
+}
+
+.checkboxItem span {
+  color: var(--cor-escuro-total);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.primaryButton,
+.secondaryButton {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton {
+  border: none;
+  background-color: var(--cor-primaria);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(227, 30, 36, 0.2);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #b9151a;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.primaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  border: 1px solid #dddddd;
+  background-color: #ffffff;
+  color: #555555;
+}
+
+.secondaryButton:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+.errorBox {
+  background-color: #fff0f0;
+  color: #b9151a;
+  border: 1px solid #f5b5b5;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.errorText {
+  color: #b9151a;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.helpText {
+  color: #666666;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+}
