@@ -1,10 +1,13 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSangueAmigo from "../../assets/logo-sangue-amigo.jpeg";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./Header.module.css";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { auth, logout, isAdmin } = useAuth();
 
   const links = [
     { to: "/home", label: "INÍCIO" },
@@ -62,6 +65,11 @@ function Header() {
     return location.pathname.startsWith(path) ? styles.active : "";
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <header className={styles.mainHeader}>
       <div className={styles.headerContent}>
@@ -99,12 +107,33 @@ function Header() {
               )}
             </div>
           ))}
+
+          {isAdmin && (
+            <div className={styles.navItem}>
+              <Link
+                to="/admin"
+                className={`${styles.navLink} ${isActive("/admin")}`}
+              >
+                ADMIN
+              </Link>
+            </div>
+          )}
         </nav>
 
-        <Link to="/perfil" className={styles.profileLink}>
-          <span className={styles.userName}>JOÃO SILVA</span>
-          <span className={styles.userAvatar}>JS</span>
-        </Link>
+        <div className={styles.profileArea}>
+          <Link to="/perfil" className={styles.profileLink}>
+            <span className={styles.userName}>
+              {isAdmin ? "ADMIN" : "JOÃO SILVA"}
+            </span>
+            <span className={styles.userAvatar}>
+              {isAdmin ? "AD" : "JS"}
+            </span>
+          </Link>
+
+          <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+            Sair
+          </button>
+        </div>
       </div>
     </header>
   );
