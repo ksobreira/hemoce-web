@@ -1,69 +1,90 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/layout/Header";
+import { campanhasService } from "../../services/api";
 import styles from "./DetalhesCampanhas.module.css";
+
+function formatarTipoSanguineo(tipo) {
+  const mapa = {
+    A_POS: "A+",
+    A_NEG: "A-",
+    B_POS: "B+",
+    B_NEG: "B-",
+    AB_POS: "AB+",
+    AB_NEG: "AB-",
+    O_POS: "O+",
+    O_NEG: "O-",
+  };
+
+  return mapa[tipo] || tipo;
+}
+
+function formatarTiposSanguineos(tipos = []) {
+  if (!tipos || tipos.length === 0) {
+    return "Todos os tipos";
+  }
+
+  return tipos.map(formatarTipoSanguineo).join(", ");
+}
+
+function formatarUrgencia(urgencia) {
+  const mapa = {
+    NORMAL: "Normal",
+    ALTA: "Alta",
+    CRITICA: "Crítica",
+  };
+
+  return mapa[urgencia] || urgencia || "Normal";
+}
+
+function formatarStatus(status) {
+  const mapa = {
+    AGENDADA: "Agendada",
+    ATIVA: "Ativa",
+    ENCERRADA: "Encerrada",
+  };
+
+  return mapa[status] || status || "Não informado";
+}
+
+function formatarData(data) {
+  if (!data) {
+    return "Não informada";
+  }
+
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
 
 function DetalhesCampanhas() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const campanhasMockadas = [
-    {
-      id: "1",
-      titulo: "Estoque baixo para O-",
-      tipoSanguineo: "O-",
-      unidade: "Hemoce Fortaleza",
-      periodo: "01/06/2026 a 30/06/2026",
-      urgencia: "Alta",
-      descricao:
-        "Campanha voltada para reforçar o estoque de sangue O negativo, um dos tipos mais importantes em situações de emergência por ser considerado doador universal para hemácias.",
-      orientacao:
-        "Doadores com tipo sanguíneo O- são incentivados a realizar agendamento o quanto antes, especialmente na unidade de Fortaleza.",
-    },
-    {
-      id: "2",
-      titulo: "Campanha Semana Solidária",
-      tipoSanguineo: "Todos os tipos",
-      unidade: "Unidade Sobral",
-      periodo: "10/06/2026 a 17/06/2026",
-      urgencia: "Média",
-      descricao:
-        "Ação especial para incentivar doações durante a semana, buscando aumentar o número de voluntários e manter os estoques em níveis seguros.",
-      orientacao:
-        "Todos os tipos sanguíneos são bem-vindos. A campanha busca ampliar a participação da comunidade local.",
-    },
-    {
-      id: "3",
-      titulo: "Alerta para tipo A+",
-      tipoSanguineo: "A+",
-      unidade: "Unidade Crato",
-      periodo: "05/06/2026 a 20/06/2026",
-      urgencia: "Média",
-      descricao:
-        "Campanha criada para reforçar o estoque de sangue A positivo, que apresentou redução nos últimos dias.",
-      orientacao:
-        "Doadores A+ podem contribuir diretamente para estabilizar o estoque da unidade.",
-    },
-    {
-      id: "4",
-      titulo: "Reforço de estoque no interior",
-      tipoSanguineo: "B-",
-      unidade: "Unidade Iguatu",
-      periodo: "01/06/2026 a 25/06/2026",
-      urgencia: "Alta",
-      descricao:
-        "Campanha voltada para aumentar as doações nas unidades do interior, especialmente para tipos sanguíneos com menor disponibilidade.",
-      orientacao:
-        "A unidade de Iguatu está priorizando doadores B-, mas outros tipos também podem contribuir.",
-    },
-  ];
+  const [campanha, setCampanha] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
 
-  const campanha =
-    campanhasMockadas.find((item) => item.id === id) || campanhasMockadas[0];
+  useEffect(() => {
+    async function carregarCampanha() {
+      try {
+        setLoading(true);
+        setErro("");
+
+        const dados = await campanhasService.buscarCampanhaPorId(id);
+        setCampanha(dados);
+      } catch (error) {
+        setErro(error.message || "Não foi possível carregar os detalhes da campanha.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarCampanha();
+  }, [id]);
 
   function getUrgencyClass(urgencia) {
-    if (urgencia === "Alta") return styles.urgencyHigh;
-    if (urgencia === "Média") return styles.urgencyMedium;
+    if (urgencia === "CRITICA") return styles.urgencyHigh;
+    if (urgencia === "ALTA") return styles.urgencyMedium;
     return styles.urgencyLow;
   }
 
@@ -79,87 +100,132 @@ function DetalhesCampanhas() {
 
           <div>
             <span className={styles.eyebrow}>Detalhes da campanha</span>
-            <h1>{campanha.titulo}</h1>
+            <h1>{campanha?.titulo || "Campanha"}</h1>
             <p>Veja as informações completas da campanha ou alerta selecionado.</p>
           </div>
         </section>
 
-        <section className={styles.contentGrid}>
-          <article className={styles.detailsCard}>
-            <div className={styles.cardHeader}>
-              <div>
-                <span className={styles.bloodType}>{campanha.tipoSanguineo}</span>
-                <h2>{campanha.titulo}</h2>
+        {loading && (
+          <section className={styles.singleMessage}>
+            <p>Carregando detalhes da campanha...</p>
+          </section>
+        )}
+
+        {erro && (
+          <section className={styles.singleError}>
+            <p>{erro}</p>
+          </section>
+        )}
+
+        {!loading && !erro && campanha && (
+          <section className={styles.contentGrid}>
+            <article className={styles.detailsCard}>
+              <div className={styles.cardHeader}>
+                <div>
+                  <span className={styles.bloodType}>
+                    {formatarTiposSanguineos(campanha.tiposSanguineosNecessarios)}
+                  </span>
+                  <h2>{campanha.titulo}</h2>
+                </div>
+
+                <span
+                  className={`${styles.urgencyBadge} ${getUrgencyClass(
+                    campanha.urgencia
+                  )}`}
+                >
+                  Urgência {formatarUrgencia(campanha.urgencia)}
+                </span>
               </div>
 
-              <span
-                className={`${styles.urgencyBadge} ${getUrgencyClass(
-                  campanha.urgencia
-                )}`}
-              >
-                Urgência {campanha.urgencia}
-              </span>
-            </div>
-
-            <div className={styles.descriptionArea}>
-              <h3>Descrição completa</h3>
-              <p>{campanha.descricao}</p>
-            </div>
-
-            <div className={styles.infoGrid}>
-              <div className={styles.infoItem}>
-                <span>Tipo sanguíneo necessário</span>
-                <strong>{campanha.tipoSanguineo}</strong>
+              <div className={styles.descriptionArea}>
+                <h3>Descrição completa</h3>
+                <p>{campanha.descricao || "Sem descrição cadastrada."}</p>
               </div>
 
-              <div className={styles.infoItem}>
-                <span>Unidade responsável</span>
-                <strong>{campanha.unidade}</strong>
+              <div className={styles.infoGrid}>
+                <div className={styles.infoItem}>
+                  <span>Tipo sanguíneo necessário</span>
+                  <strong>
+                    {formatarTiposSanguineos(campanha.tiposSanguineosNecessarios)}
+                  </strong>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <span>Unidade responsável</span>
+                  <strong>
+                    {campanha.hemocentroNome ||
+                      campanha.nomeHemocentro ||
+                      "Unidade vinculada"}
+                  </strong>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <span>Período da campanha</span>
+                  <strong>
+                    {formatarData(campanha.dataInicio)} a{" "}
+                    {formatarData(campanha.dataFim)}
+                  </strong>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <span>Nível de urgência</span>
+                  <strong>{formatarUrgencia(campanha.urgencia)}</strong>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <span>Status</span>
+                  <strong>{formatarStatus(campanha.status)}</strong>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <span>Localidade</span>
+                  <strong>
+                    {campanha.cidade || "Cidade não informada"}
+                    {campanha.estado ? ` - ${campanha.estado}` : ""}
+                  </strong>
+                </div>
               </div>
 
-              <div className={styles.infoItem}>
-                <span>Período da campanha</span>
-                <strong>{campanha.periodo}</strong>
+              <div className={styles.orientationBox}>
+                <strong>Orientação ao doador</strong>
+                <p>
+                  Caso você seja compatível com os tipos sanguíneos solicitados,
+                  agende uma doação na unidade responsável ou acompanhe as
+                  orientações do hemocentro.
+                </p>
               </div>
 
-              <div className={styles.infoItem}>
-                <span>Nível de urgência</span>
-                <strong>{campanha.urgencia}</strong>
+              <div className={styles.actions}>
+                <button
+                  className={styles.secondaryButton}
+                  onClick={() => navigate("/campanhas")}
+                >
+                  Voltar
+                </button>
+
+                <Link to="/agendamentos/novo" className={styles.primaryButton}>
+                  Agendar doação
+                </Link>
               </div>
-            </div>
+            </article>
 
-            <div className={styles.orientationBox}>
-              <strong>Orientação ao doador</strong>
-              <p>{campanha.orientacao}</p>
-            </div>
-
-            <div className={styles.actions}>
-              <button className={styles.secondaryButton} onClick={() => navigate("/campanhas")}>
-                Voltar
-              </button>
-
-              <Link to="/agendamentos/novo" className={styles.primaryButton}>
-                Agendar doação
-              </Link>
-            </div>
-          </article>
-
-          <aside className={styles.sideCard}>
-            <h2>Por que isso importa?</h2>
-            <p>
-              Alertas de estoque ajudam o doador a entender quais tipos sanguíneos
-              estão com maior necessidade no momento.
-            </p>
-
-            <div className={styles.mockNotice}>
-              <strong>Dados mockados</strong>
+            <aside className={styles.sideCard}>
+              <h2>Por que isso importa?</h2>
               <p>
-                Esta tela usa informações fictícias para simular como uma campanha
-                real seria exibida após integração com banco de dados ou API.
+                Alertas de estoque ajudam o doador a entender quais tipos
+                sanguíneos estão com maior necessidade no momento.
               </p>
-            </div>
-          </aside>
-        </section>
+
+              <div className={styles.mockNotice}>
+                <strong>Dados do backend</strong>
+                <p>
+                  Esta página carrega os detalhes da campanha usando o ID da rota
+                  e consultando a API do backend.
+                </p>
+              </div>
+            </aside>
+          </section>
+        )}
       </main>
     </>
   );

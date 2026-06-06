@@ -304,3 +304,31 @@
     width: 100%;
   }
 }
+
+.singleMessage,
+.singleError {
+  max-width: 980px;
+  margin: 0 auto;
+  background-color: var(--bg-card);
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035);
+}
+
+.singleMessage p {
+  color: #666666;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.singleError {
+  border-color: #f5b5b5;
+  background-color: #fff0f0;
+}
+
+.singleError p {
+  color: #b9151a;
+  font-size: 0.94rem;
+  font-weight: 800;
+}
