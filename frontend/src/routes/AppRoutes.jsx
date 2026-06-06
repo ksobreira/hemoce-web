@@ -13,6 +13,7 @@ import DetalhesCampanhas from '../pages/campanhas/DetalhesCampanhas';
 
 import AdminCampanhas from '../pages/admin/AdminCampanhas';
 import AdminNovaCampanha from '../pages/admin/AdminNovaCampanha';
+import AdminAgendamentos from '../pages/admin/AdminAgendamentos';
 
 import PrivateRoute from './PrivateRoute';
 import AdminRoute from './AdminRoute';
@@ -29,10 +30,13 @@ function AdminPlaceholder() {
     >
       <h1>Painel Administrativo</h1>
       <p>
-        Área administrativa em construção. Acesse o gerenciamento de campanhas em:
+        Área administrativa em construção. Acesse os módulos abaixo:
       </p>
       <p>
         <strong>/admin/campanhas</strong>
+      </p>
+      <p>
+        <strong>/admin/agendamentos</strong>
       </p>
     </main>
   );
@@ -123,6 +127,15 @@ function AppRoutes() {
         element={
           <AdminRoute>
             <AdminNovaCampanha />
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin/agendamentos"
+        element={
+          <AdminRoute>
+            <AdminAgendamentos />
           </AdminRoute>
         }
       />

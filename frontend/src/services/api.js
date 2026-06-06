@@ -147,4 +147,14 @@ export const agendamentosService = {
   cancelarAgendamento(id) {
     return api.patch(`/agendamentos/${id}/cancelar`);
   },
+
+  listarAgendamentosAdmin(hemocentroId, data) {
+    return api.get(`/agendamentos/admin?hemocentroId=${hemocentroId}&data=${data}`);
+  },
+
+  atualizarStatusAdmin(id, status) {
+    return api.patch(`/agendamentos/admin/${id}/status`, {
+      status,
+    });
+  },
 };
