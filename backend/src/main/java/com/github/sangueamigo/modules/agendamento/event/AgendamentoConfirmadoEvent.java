@@ -8,7 +8,6 @@ public record AgendamentoConfirmadoEvent(
         String nomeUsuario,
         String nomeHemocentro,
         LocalDate data,
-        LocalTime horario,
-        String qrCodeToken
+        LocalTime horario
 ) {
 }

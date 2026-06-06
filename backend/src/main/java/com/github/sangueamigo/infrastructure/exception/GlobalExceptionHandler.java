@@ -128,14 +128,6 @@ public class GlobalExceptionHandler {
                 .body(ErroResponse.of(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage()));
     }
 
-    // 400 Bad Request QR Code
-    @ExceptionHandler(QrCodeInvalidoException.class)
-    public ResponseEntity<ErroResponse> handleQrCode(QrCodeInvalidoException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ErroResponse.of(HttpStatus.BAD_REQUEST, ex.getMessage()));
-    }
-
     // 500 fallback genérico
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGenerico(Exception ex) {

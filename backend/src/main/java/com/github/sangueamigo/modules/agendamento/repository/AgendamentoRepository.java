@@ -24,14 +24,11 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             Long usuarioId, StatusAgendamento status
     );
 
-    // RF 15
-    Optional<Agendamento> findByQrCodeToken(String qrCodeToken);
-
     // Contar agendamentos ativos num horário - RF20
     @Query("""
         SELECT COUNT(a) FROM Agendamento a
         WHERE a.horarioDisponivel.id = :horarioId
-        AND a.status NOT IN ('CANCELADO')
+        AND a.status IN ('PENDENTE', 'CONFIRMADO')
     """)
     long countAgendamentosAtivosNoHorario(@Param("horarioId") Long horarioId);
 

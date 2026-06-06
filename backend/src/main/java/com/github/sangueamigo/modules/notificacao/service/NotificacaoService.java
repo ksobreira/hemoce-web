@@ -49,17 +49,14 @@ public class NotificacaoService {
             String nomeUsuario,
             String nomeHemocentro,
             LocalDate data,
-            LocalTime horario,
-            String qrCodeToken
+            LocalTime horario
     ) {
         enviar(
                 email,
                 "Agendamento confirmado - Sangue Amigo",
                 "Ola, " + nomeUsuario + "!\n\n" +
                         "Seu agendamento no hemocentro " + nomeHemocentro + " foi confirmado para " +
-                        formatarDataHora(data, horario) + ".\n\n" +
-                        "Token do QR Code: " + qrCodeToken + "\n\n" +
-                        "Apresente esse token no momento da doacao."
+                        formatarDataHora(data, horario) + "."
         );
     }
 
