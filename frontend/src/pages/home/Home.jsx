@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import { agendamentosService, campanhasService } from "../../services/api";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./Home.module.css";
 
 function formatarData(data) {
@@ -50,12 +51,25 @@ function formatarUrgencia(urgencia) {
 }
 
 function Home() {
+  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+
   const [agendamentoAtivo, setAgendamentoAtivo] = useState(null);
   const [campanhaDestaque, setCampanhaDestaque] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
 
   useEffect(() => {
+    if (isAdmin) {
+      navigate("/admin", { replace: true });
+    }
+  }, [isAdmin, navigate]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      return;
+    }
+
     async function carregarResumo() {
       try {
         setLoading(true);
@@ -66,27 +80,33 @@ function Home() {
           campanhasService.listarCampanhas(),
         ]);
 
-        const listaAgendamentos = Array.isArray(agendamentos) ? agendamentos : [];
+        const listaAgendamentos = Array.isArray(agendamentos)
+          ? agendamentos
+          : [];
+
         const listaCampanhas = Array.isArray(campanhas) ? campanhas : [];
 
         setAgendamentoAtivo(listaAgendamentos[0] || null);
 
-        const campanhaCritica =
+        const campanhaPrioritaria =
           listaCampanhas.find((campanha) => campanha.urgencia === "CRITICA") ||
           listaCampanhas.find((campanha) => campanha.urgencia === "ALTA") ||
           listaCampanhas[0] ||
           null;
 
-        setCampanhaDestaque(campanhaCritica);
+        setCampanhaDestaque(campanhaPrioritaria);
       } catch (error) {
-        setErro(error.message || "Não foi possível carregar o resumo da página inicial.");
+        setErro(
+          error.message ||
+            "Não foi possível carregar o resumo da página inicial."
+        );
       } finally {
         setLoading(false);
       }
     }
 
     carregarResumo();
-  }, []);
+  }, [isAdmin]);
 
   return (
     <>
@@ -145,6 +165,7 @@ function Home() {
               <Link to="/agendamentos" className={styles.secondaryLink}>
                 Meus agendamentos
               </Link>
+
               <Link to="/agendamentos/novo" className={styles.primaryLink}>
                 Novo agendamento
               </Link>
