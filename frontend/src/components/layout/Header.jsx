@@ -1,13 +1,18 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSangueAmigo from "../../assets/logo-sangue-amigo.jpeg";
+import { useAuth } from "../../hooks/useAuth";
 import styles from "./Header.module.css";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, isAdmin } = useAuth();
 
-  const links = [
-    { to: "/home", label: "INÍCIO" },
+  const inicioPath = isAdmin ? "/admin" : "/home";
+
+  const userLinks = [
+    { to: inicioPath, label: "INÍCIO" },
     {
       to: "/agendamentos",
       label: "AGENDAMENTOS",
@@ -22,11 +27,6 @@ function Header() {
           title: "Novo agendamento",
           description: "Escolher unidade, data e horário",
         },
-        {
-          to: "/agendamentos/1",
-          title: "Próximo agendamento",
-          description: "Hemoce Fortaleza às 14:00",
-        },
       ],
     },
     {
@@ -38,34 +38,73 @@ function Header() {
           title: "Ver campanhas",
           description: "Campanhas e alertas ativos",
         },
-        {
-          to: "/campanhas/1",
-          title: "Estoque baixo O-",
-          description: "Urgência alta em Fortaleza",
-        },
-        {
-          to: "/campanhas/2",
-          title: "Semana Solidária",
-          description: "Ação especial em Sobral",
-        },
       ],
     },
     { to: "/orientacoes", label: "ORIENTAÇÕES" },
     { to: "/assistente", label: "ASSISTENTE IA" },
   ];
 
+  const adminLinks = [
+    { to: "/admin", label: "INÍCIO" },
+    {
+      to: "/admin/campanhas",
+      label: "CAMPANHAS",
+      submenu: [
+        {
+          to: "/admin/campanhas",
+          title: "Gerenciar campanhas",
+          description: "Listar campanhas cadastradas",
+        },
+        {
+          to: "/admin/campanhas/nova",
+          title: "Nova campanha",
+          description: "Criar campanha ou alerta",
+        },
+      ],
+    },
+    {
+      to: "/admin/agendamentos",
+      label: "AGENDAMENTOS",
+      submenu: [
+        {
+          to: "/admin/agendamentos",
+          title: "Gerenciar agendamentos",
+          description: "Confirmar, concluir ou cancelar horários",
+        },
+      ],
+    },
+    {
+      to: "/campanhas",
+      label: "VISÃO PÚBLICA",
+      submenu: [
+        {
+          to: "/campanhas",
+          title: "Campanhas do usuário",
+          description: "Ver como campanhas aparecem para doadores",
+        },
+      ],
+    },
+  ];
+
+  const links = isAdmin ? adminLinks : userLinks;
+
   function isActive(path) {
-    if (path === "/home") {
-      return location.pathname === "/home" ? styles.active : "";
+    if (path === "/home" || path === "/admin") {
+      return location.pathname === path ? styles.active : "";
     }
 
     return location.pathname.startsWith(path) ? styles.active : "";
   }
 
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <header className={styles.mainHeader}>
       <div className={styles.headerContent}>
-        <Link to="/home" className={styles.logoArea}>
+        <Link to={inicioPath} className={styles.logoArea}>
           <img
             src={logoSangueAmigo}
             alt="Logo Sangue Amigo"
@@ -101,10 +140,22 @@ function Header() {
           ))}
         </nav>
 
-        <Link to="/perfil" className={styles.profileLink}>
-          <span className={styles.userName}>JOÃO SILVA</span>
-          <span className={styles.userAvatar}>JS</span>
-        </Link>
+        <div className={styles.profileArea}>
+          <Link to="/perfil" className={styles.profileLink}>
+            <span className={styles.userName}>
+              {isAdmin ? "ADMIN" : "JOÃO SILVA"}
+            </span>
+            <span className={styles.userAvatar}>{isAdmin ? "AD" : "JS"}</span>
+          </Link>
+
+          <button
+            type="button"
+            className={styles.logoutButton}
+            onClick={handleLogout}
+          >
+            Sair
+          </button>
+        </div>
       </div>
     </header>
   );

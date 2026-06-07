@@ -1,67 +1,105 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
+import { agendamentosService, hemocentrosService } from "../../services/api";
 import styles from "./NovoAgendamento.module.css";
+
+function formatarHorario(hora) {
+  if (!hora) return "--:--";
+  return hora.slice(0, 5);
+}
 
 function NovoAgendamento() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    unidade: "",
-    data: "",
-    horario: "",
-    tipoSanguineo: "",
-    observacoes: "",
-  });
+  const [hemocentros, setHemocentros] = useState([]);
+  const [horarios, setHorarios] = useState([]);
 
-  const unidades = [
-    "Hemoce Fortaleza",
-    "Unidade Sobral",
-    "Unidade Crato",
-    "Unidade Iguatu",
-  ];
+  const [hemocentroId, setHemocentroId] = useState("");
+  const [data, setData] = useState("");
+  const [horarioId, setHorarioId] = useState("");
 
-  const horarios = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "14:00",
-    "15:00",
-    "16:00",
-  ];
+  const [loadingHemocentros, setLoadingHemocentros] = useState(true);
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
+  const [salvando, setSalvando] = useState(false);
 
-  const tiposSanguineos = [
-    "A+",
-    "A-",
-    "B+",
-    "B-",
-    "AB+",
-    "AB-",
-    "O+",
-    "O-",
-    "Não sei informar",
-  ];
+  const [erro, setErro] = useState("");
+  const [erroHorarios, setErroHorarios] = useState("");
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  useEffect(() => {
+    async function carregarHemocentros() {
+      try {
+        setLoadingHemocentros(true);
+        setErro("");
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  }
+        const dados = await hemocentrosService.listarHemocentros();
+        setHemocentros(Array.isArray(dados) ? dados : []);
+      } catch (error) {
+        setErro(error.message || "Não foi possível carregar as unidades.");
+      } finally {
+        setLoadingHemocentros(false);
+      }
+    }
 
-  function handleSubmit(event) {
+    carregarHemocentros();
+  }, []);
+
+  useEffect(() => {
+    async function carregarHorarios() {
+      if (!hemocentroId || !data) {
+        setHorarios([]);
+        setHorarioId("");
+        return;
+      }
+
+      try {
+        setLoadingHorarios(true);
+        setErroHorarios("");
+        setHorarioId("");
+
+        const dados = await hemocentrosService.listarHorariosPorData(
+          hemocentroId,
+          data
+        );
+
+        const horariosDisponiveis = Array.isArray(dados)
+          ? dados.filter((horario) => horario.disponivel && horario.vagas > 0)
+          : [];
+
+        setHorarios(horariosDisponiveis);
+      } catch (error) {
+        setErroHorarios(
+          error.message || "Não foi possível carregar os horários disponíveis."
+        );
+      } finally {
+        setLoadingHorarios(false);
+      }
+    }
+
+    carregarHorarios();
+  }, [hemocentroId, data]);
+
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    console.log("Dados do agendamento:", formData);
+    if (!horarioId) {
+      setErro("Selecione um horário disponível.");
+      return;
+    }
 
-    alert(
-      "Agendamento simulado com sucesso! Nesta etapa, os dados ainda não são salvos no banco."
-    );
+    try {
+      setSalvando(true);
+      setErro("");
 
-    navigate("/agendamentos");
+      await agendamentosService.criarAgendamento(Number(horarioId));
+
+      alert("Agendamento criado com sucesso!");
+      navigate("/agendamentos");
+    } catch (error) {
+      setErro(error.message || "Não foi possível criar o agendamento.");
+    } finally {
+      setSalvando(false);
+    }
   }
 
   function handleCancel() {
@@ -78,92 +116,94 @@ function NovoAgendamento() {
             <span className={styles.eyebrow}>Agendamento de doação</span>
             <h1>Novo Agendamento</h1>
             <p>
-              Preencha os dados abaixo para simular o agendamento da sua doação
-              de sangue.
+              Escolha uma unidade, uma data e um horário disponível para marcar
+              sua doação.
             </p>
           </div>
         </section>
 
         <section className={styles.contentGrid}>
           <form className={styles.formCard} onSubmit={handleSubmit}>
+            {erro && <div className={styles.errorBox}>{erro}</div>}
+
             <div className={styles.formGroup}>
-              <label htmlFor="unidade">Unidade de doação</label>
-              <select
-                id="unidade"
-                name="unidade"
-                value={formData.unidade}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Selecione uma unidade</option>
-                {unidades.map((unidade) => (
-                  <option key={unidade} value={unidade}>
-                    {unidade}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <label htmlFor="hemocentroId">Unidade de doação</label>
 
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="data">Data</label>
-                <input
-                  id="data"
-                  name="data"
-                  type="date"
-                  value={formData.data}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="horario">Horário</label>
+              {loadingHemocentros ? (
+                <p className={styles.helpText}>Carregando unidades...</p>
+              ) : (
                 <select
-                  id="horario"
-                  name="horario"
-                  value={formData.horario}
-                  onChange={handleChange}
+                  id="hemocentroId"
+                  name="hemocentroId"
+                  value={hemocentroId}
+                  onChange={(event) => setHemocentroId(event.target.value)}
                   required
                 >
-                  <option value="">Selecione</option>
-                  {horarios.map((horario) => (
-                    <option key={horario} value={horario}>
-                      {horario}
+                  <option value="">Selecione uma unidade</option>
+                  {hemocentros.map((hemocentro) => (
+                    <option key={hemocentro.id} value={hemocentro.id}>
+                      {hemocentro.nome} - {hemocentro.cidade}
                     </option>
                   ))}
                 </select>
-              </div>
+              )}
+
+              {!loadingHemocentros && hemocentros.length === 0 && (
+                <p className={styles.errorText}>
+                  Nenhuma unidade disponível para agendamento.
+                </p>
+              )}
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="tipoSanguineo">Tipo sanguíneo</label>
-              <select
-                id="tipoSanguineo"
-                name="tipoSanguineo"
-                value={formData.tipoSanguineo}
-                onChange={handleChange}
+              <label htmlFor="data">Data</label>
+              <input
+                id="data"
+                name="data"
+                type="date"
+                value={data}
+                onChange={(event) => setData(event.target.value)}
                 required
-              >
-                <option value="">Selecione seu tipo sanguíneo</option>
-                {tiposSanguineos.map((tipo) => (
-                  <option key={tipo} value={tipo}>
-                    {tipo}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="observacoes">Observações</label>
-              <textarea
-                id="observacoes"
-                name="observacoes"
-                rows="5"
-                placeholder="Exemplo: prefiro atendimento pela manhã, tenho dúvidas sobre documentação, etc."
-                value={formData.observacoes}
-                onChange={handleChange}
-              />
+              <label htmlFor="horarioId">Horário disponível</label>
+
+              {!hemocentroId || !data ? (
+                <p className={styles.helpText}>
+                  Selecione uma unidade e uma data para carregar os horários.
+                </p>
+              ) : loadingHorarios ? (
+                <p className={styles.helpText}>Carregando horários...</p>
+              ) : erroHorarios ? (
+                <p className={styles.errorText}>{erroHorarios}</p>
+              ) : (
+                <select
+                  id="horarioId"
+                  name="horarioId"
+                  value={horarioId}
+                  onChange={(event) => setHorarioId(event.target.value)}
+                  required
+                >
+                  <option value="">Selecione um horário</option>
+                  {horarios.map((horario) => (
+                    <option key={horario.id} value={horario.id}>
+                      {formatarHorario(horario.hora)} — {horario.vagas} vaga(s)
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {hemocentroId &&
+                data &&
+                !loadingHorarios &&
+                !erroHorarios &&
+                horarios.length === 0 && (
+                  <p className={styles.errorText}>
+                    Nenhum horário disponível para essa unidade nesta data.
+                  </p>
+                )}
             </div>
 
             <div className={styles.actions}>
@@ -175,8 +215,12 @@ function NovoAgendamento() {
                 Cancelar
               </button>
 
-              <button type="submit" className={styles.primaryButton}>
-                Confirmar agendamento
+              <button
+                type="submit"
+                className={styles.primaryButton}
+                disabled={salvando || !horarioId}
+              >
+                {salvando ? "Confirmando..." : "Confirmar agendamento"}
               </button>
             </div>
           </form>
@@ -188,16 +232,8 @@ function NovoAgendamento() {
               <li>Leve um documento oficial com foto.</li>
               <li>Esteja alimentado e evite alimentos gordurosos antes da doação.</li>
               <li>Durma bem na noite anterior.</li>
-              <li>Evite bebidas alcoólicas nas horas anteriores à doação.</li>
+              <li>Informe qualquer sintoma recente durante a triagem.</li>
             </ul>
-
-            <div className={styles.warningBox}>
-              <strong>Importante</strong>
-              <p>
-                Esta tela ainda usa dados mockados. O envio real para banco de
-                dados ou API será implementado futuramente.
-              </p>
-            </div>
           </aside>
         </section>
       </main>

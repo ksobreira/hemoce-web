@@ -1,13 +1,28 @@
 .page {
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 78px);
   background-color: var(--bg-principal);
   padding: 52px 24px 70px;
   font-family: var(--fonte-principal);
 }
 
 .pageHeader {
-  max-width: 980px;
+  max-width: 900px;
   margin: 0 auto 30px;
+}
+
+.backButton {
+  border: none;
+  background-color: transparent;
+  color: var(--cor-primaria);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 22px;
+  padding: 0;
+}
+
+.backButton:hover {
+  text-decoration: underline;
 }
 
 .eyebrow {
@@ -33,31 +48,17 @@
   line-height: 1.6;
 }
 
-.contentGrid {
-  max-width: 980px;
+.contentWrapper {
+  max-width: 900px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 24px;
-  align-items: flex-start;
 }
 
-.formCard,
-.infoCard {
+.formCard {
   background-color: var(--bg-card);
   border: 1px solid #eeeeee;
   border-radius: 16px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.045);
-}
-
-.formCard {
   padding: 28px;
-}
-
-.formRow {
-  display: grid;
-  grid-template-columns: 1fr 180px;
-  gap: 18px;
 }
 
 .formGroup {
@@ -105,6 +106,47 @@
   box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.08);
 }
 
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.checkboxItem {
+  height: 42px;
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 0 !important;
+  transition: all 0.2s ease;
+}
+
+.checkboxItem:hover {
+  border-color: var(--cor-primaria);
+  background-color: #fffafa;
+}
+
+.checkboxItem input {
+  width: auto;
+  height: auto;
+}
+
+.checkboxItem span {
+  color: var(--cor-escuro-total);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -131,10 +173,15 @@
   box-shadow: 0 10px 24px rgba(227, 30, 36, 0.2);
 }
 
-.primaryButton:hover {
+.primaryButton:hover:not(:disabled) {
   background-color: #b9151a;
   color: #ffffff;
   transform: translateY(-2px);
+}
+
+.primaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .secondaryButton {
@@ -146,72 +193,6 @@
 .secondaryButton:hover {
   border-color: var(--cor-primaria);
   color: var(--cor-primaria);
-}
-
-.infoCard {
-  padding: 24px;
-}
-
-.infoCard h2 {
-  color: var(--cor-escuro-total);
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin-bottom: 16px;
-}
-
-.infoCard ul {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-left: 18px;
-  margin-bottom: 22px;
-}
-
-.infoCard li {
-  color: #555555;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.warningBox {
-  background-color: #fff7e8;
-  border: 1px solid #ffe0a8;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.warningBox strong {
-  display: block;
-  color: #9a5b00;
-  font-size: 0.82rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.warningBox p {
-  color: #6b4a1b;
-  font-size: 0.86rem;
-  line-height: 1.5;
-}
-
-@media (max-width: 860px) {
-  .contentGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .formRow {
-    grid-template-columns: 1fr;
-  }
-
-  .actions {
-    flex-direction: column-reverse;
-  }
-
-  .primaryButton,
-  .secondaryButton {
-    width: 100%;
-  }
 }
 
 .errorBox {
@@ -237,5 +218,29 @@
   color: #666666;
   font-size: 0.86rem;
   font-weight: 700;
-  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
 }

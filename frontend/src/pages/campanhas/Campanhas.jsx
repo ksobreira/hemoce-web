@@ -1,61 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/layout/Header";
+import { campanhasService } from "../../services/api";
 import styles from "./Campanhas.module.css";
 
-function Campanhas() {
-  const estoques = [
-    { tipo: "O-", nivel: "Crítico", percentual: 18, status: "critico" },
-    { tipo: "A+", nivel: "Alerta", percentual: 38, status: "alerta" },
-    { tipo: "B-", nivel: "Alerta", percentual: 42, status: "alerta" },
-    { tipo: "O+", nivel: "Estável", percentual: 72, status: "estavel" },
-  ];
+function formatarTipoSanguineo(tipo) {
+  const mapa = {
+    A_POS: "A+",
+    A_NEG: "A-",
+    B_POS: "B+",
+    B_NEG: "B-",
+    AB_POS: "AB+",
+    AB_NEG: "AB-",
+    O_POS: "O+",
+    O_NEG: "O-",
+  };
 
-  const campanhas = [
-    {
-      id: 1,
-      titulo: "Estoque baixo para O-",
-      tipoSanguineo: "O-",
-      unidade: "Hemoce Fortaleza",
-      urgencia: "Alta",
-      descricao: "Campanha para reforço do estoque de sangue O negativo.",
-    },
-    {
-      id: 2,
-      titulo: "Campanha Semana Solidária",
-      tipoSanguineo: "Todos os tipos",
-      unidade: "Unidade Sobral",
-      urgencia: "Média",
-      descricao: "Ação especial para incentivar doações durante a semana.",
-    },
-    {
-      id: 3,
-      titulo: "Alerta para tipo A+",
-      tipoSanguineo: "A+",
-      unidade: "Unidade Crato",
-      urgencia: "Média",
-      descricao: "O estoque de A positivo precisa de reforço nos próximos dias.",
-    },
-    {
-      id: 4,
-      titulo: "Reforço de estoque no interior",
-      tipoSanguineo: "B-",
-      unidade: "Unidade Iguatu",
-      urgencia: "Alta",
-      descricao: "Campanha voltada para aumentar as doações nas unidades do interior.",
-    },
-  ];
+  return mapa[tipo] || tipo;
+}
 
-  function getStockClass(status) {
-    if (status === "critico") return styles.stockCritical;
-    if (status === "alerta") return styles.stockWarning;
-    if (status === "estavel") return styles.stockStable;
-    return "";
+function formatarTiposSanguineos(tipos = []) {
+  if (!tipos || tipos.length === 0) {
+    return "Todos os tipos";
   }
 
+  return tipos.map(formatarTipoSanguineo).join(", ");
+}
+
+function formatarUrgencia(urgencia) {
+  const mapa = {
+    NORMAL: "Normal",
+    ALTA: "Alta",
+    CRITICA: "Crítica",
+  };
+
+  return mapa[urgencia] || urgencia || "Normal";
+}
+
+function Campanhas() {
+  const [campanhas, setCampanhas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    async function carregarCampanhas() {
+      try {
+        setLoading(true);
+        setErro("");
+
+        const dados = await campanhasService.listarCampanhas();
+        setCampanhas(Array.isArray(dados) ? dados : []);
+      } catch (error) {
+        setErro(error.message || "Não foi possível carregar as campanhas.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarCampanhas();
+  }, []);
+
   function getUrgencyClass(urgencia) {
-    if (urgencia === "Alta") return styles.urgencyHigh;
-    if (urgencia === "Média") return styles.urgencyMedium;
+    if (urgencia === "CRITICA") return styles.urgencyHigh;
+    if (urgencia === "ALTA") return styles.urgencyMedium;
     return styles.urgencyLow;
   }
 
@@ -78,81 +85,148 @@ function Campanhas() {
         <section className={styles.stockSection}>
           <div className={styles.sectionTitle}>
             <h2>Níveis de Estoque</h2>
-            <p>Indicadores mockados para simular a necessidade por tipo sanguíneo.</p>
+            <p>
+              Indicadores visuais de apoio. A integração principal desta etapa é
+              com as campanhas cadastradas no backend.
+            </p>
           </div>
 
           <div className={styles.stockGrid}>
-            {estoques.map((estoque) => (
-              <article key={estoque.tipo} className={styles.stockCard}>
-                <div className={styles.stockHeader}>
-                  <strong>{estoque.tipo}</strong>
-                  <span className={getStockClass(estoque.status)}>
-                    {estoque.nivel}
-                  </span>
-                </div>
+            <article className={styles.stockCard}>
+              <div className={styles.stockHeader}>
+                <strong>O-</strong>
+                <span className={styles.stockCritical}>Crítico</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={`${styles.progressFill} ${styles.stockCritical}`}
+                  style={{ width: "18%" }}
+                />
+              </div>
+              <p>18% do nível ideal</p>
+            </article>
 
-                <div className={styles.progressBar}>
-                  <div
-                    className={`${styles.progressFill} ${getStockClass(
-                      estoque.status
-                    )}`}
-                    style={{ width: `${estoque.percentual}%` }}
-                  />
-                </div>
+            <article className={styles.stockCard}>
+              <div className={styles.stockHeader}>
+                <strong>A+</strong>
+                <span className={styles.stockWarning}>Alerta</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={`${styles.progressFill} ${styles.stockWarning}`}
+                  style={{ width: "38%" }}
+                />
+              </div>
+              <p>38% do nível ideal</p>
+            </article>
 
-                <p>{estoque.percentual}% do nível ideal</p>
-              </article>
-            ))}
+            <article className={styles.stockCard}>
+              <div className={styles.stockHeader}>
+                <strong>B-</strong>
+                <span className={styles.stockWarning}>Alerta</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={`${styles.progressFill} ${styles.stockWarning}`}
+                  style={{ width: "42%" }}
+                />
+              </div>
+              <p>42% do nível ideal</p>
+            </article>
+
+            <article className={styles.stockCard}>
+              <div className={styles.stockHeader}>
+                <strong>O+</strong>
+                <span className={styles.stockStable}>Estável</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={`${styles.progressFill} ${styles.stockStable}`}
+                  style={{ width: "72%" }}
+                />
+              </div>
+              <p>72% do nível ideal</p>
+            </article>
           </div>
         </section>
 
         <section className={styles.campaignSection}>
           <div className={styles.sectionTitle}>
             <h2>Campanhas Ativas</h2>
-            <p>Cards com campanhas e alertas disponíveis para o doador.</p>
+            <p>Campanhas recuperadas da API do backend.</p>
           </div>
 
-          <div className={styles.campaignGrid}>
-            {campanhas.map((campanha) => (
-              <article key={campanha.id} className={styles.campaignCard}>
-                <div className={styles.campaignTop}>
-                  <span className={styles.bloodType}>
-                    {campanha.tipoSanguineo}
-                  </span>
+          {loading && (
+            <div className={styles.feedbackBox}>
+              <p>Carregando campanhas...</p>
+            </div>
+          )}
 
-                  <span
-                    className={`${styles.urgencyBadge} ${getUrgencyClass(
-                      campanha.urgencia
-                    )}`}
-                  >
-                    {campanha.urgencia}
-                  </span>
-                </div>
+          {erro && (
+            <div className={styles.errorBox}>
+              <p>{erro}</p>
+            </div>
+          )}
 
-                <h3>{campanha.titulo}</h3>
+          {!loading && !erro && campanhas.length === 0 && (
+            <div className={styles.feedbackBox}>
+              <h3>Nenhuma campanha cadastrada</h3>
+              <p>
+                Ainda não existem campanhas cadastradas no backend. Quando o
+                administrador criar uma campanha, ela aparecerá aqui.
+              </p>
+            </div>
+          )}
 
-                <div className={styles.metaInfo}>
-                  <span>Unidade responsável</span>
-                  <strong>{campanha.unidade}</strong>
-                </div>
+          {!loading && !erro && campanhas.length > 0 && (
+            <div className={styles.campaignGrid}>
+              {campanhas.map((campanha) => (
+                <article key={campanha.id} className={styles.campaignCard}>
+                  <div className={styles.campaignTop}>
+                    <span className={styles.bloodType}>
+                      {formatarTiposSanguineos(
+                        campanha.tiposSanguineosNecessarios
+                      )}
+                    </span>
 
-                <p>{campanha.descricao}</p>
+                    <span
+                      className={`${styles.urgencyBadge} ${getUrgencyClass(
+                        campanha.urgencia
+                      )}`}
+                    >
+                      {formatarUrgencia(campanha.urgencia)}
+                    </span>
+                  </div>
 
-                <div className={styles.cardActions}>
-                  <Link
-                    to={`/campanhas/${campanha.id}`}
-                    className={styles.secondaryButton}
-                  >
-                    Ver detalhes
-                  </Link>
+                  <h3>{campanha.titulo}</h3>
 
-                  <Link to="/agendamentos/novo" className={styles.primaryButton}>
-                    Agendar doação
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
+                  <div className={styles.metaInfo}>
+                    <span>Unidade responsável</span>
+                    <strong>
+                      {campanha.hemocentroNome ||
+                        campanha.nomeHemocentro ||
+                        "Unidade vinculada"}
+                    </strong>
+                  </div>
+
+                  <p>{campanha.descricao}</p>
+
+                  <div className={styles.cardActions}>
+                    <Link
+                      to={`/campanhas/${campanha.id}`}
+                      className={styles.secondaryButton}
+                    >
+                      Ver detalhes
+                    </Link>
+
+                    <Link to="/agendamentos/novo" className={styles.primaryButton}>
+                      Agendar doação
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </>

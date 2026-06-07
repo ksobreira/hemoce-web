@@ -188,3 +188,72 @@
     justify-content: space-between;
   }
 }
+
+.appointmentInfo small {
+  display: block;
+  color: #777777;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 6px;
+}
+
+.statusPending {
+  background-color: #fff5df;
+  color: #b86b00;
+}
+
+.cancelButton {
+  min-width: 92px;
+  height: 36px;
+  border: 1px solid #f5b5b5;
+  border-radius: 8px;
+  color: #b9151a;
+  background-color: #fff0f0;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #b9151a;
+  color: #ffffff;
+}
+
+.feedbackBox,
+.errorBox {
+  background-color: var(--bg-card);
+  border: 1px solid #eeeeee;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035);
+}
+
+.feedbackBox h2 {
+  color: var(--cor-escuro-total);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.feedbackBox p {
+  color: #666666;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.errorBox {
+  border-color: #f5b5b5;
+  background-color: #fff0f0;
+}
+
+.errorBox p {
+  color: #b9151a;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
