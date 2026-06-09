@@ -2,6 +2,7 @@ package com.github.sangueamigo.modules.conta.entity;
 
 
 import com.github.sangueamigo.modules.conta.enums.Role;
+import com.github.sangueamigo.modules.administrador.entity.Administrador;
 import com.github.sangueamigo.modules.usuario.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,9 @@ public class Conta implements UserDetails {
 
     @OneToOne(mappedBy = "conta")
     private Usuario usuario;
+
+    @OneToOne(mappedBy = "conta")
+    private Administrador administrador;
 
     @Column
     @Enumerated(EnumType.STRING)
