@@ -1,85 +1,262 @@
-# 🩸🩸🩸🩸🩸🩸🩸 Sangue Amigo🩸🩸🩸🩸🩸🩸🩸
+# Sangue Amigo / Hemoce Web
 
-<p align="center">
-  <img src="https://img.shields.io/github/repo-size/ksobreira/hemoce-web?style=for-the-badge&color=cc0000&labelColor=333333" alt="Tamanho do Repositório">
-  <img src="https://img.shields.io/github/languages/count/ksobreira/hemoce-web?style=for-the-badge&color=cc0000&labelColor=333333" alt="Linguagens">
-  <img src="https://img.shields.io/github/last-commit/ksobreira/hemoce-web?style=for-the-badge&color=cc0000&labelColor=333333" alt="Último Commit">
-</p>
-
-<p align="center">
-  <strong>Uma solução digital estratégica para otimizar, modernizar e incentivar o fluxo de doação de sangue e medula óssea no Ceará.</strong>
-</p>
-
----
-
-
-
-O **Hemoce Web** é uma plataforma desenvolvida para aproximar o cidadão do Centro de Hematologia e Hemoterapia do Ceará (Hemoce). A aplicação moderniza a interação com o hemocentro, centralizando serviços essenciais tanto para o doador quanto para a administração, fortalecendo o engajamento e a fidelização de voluntários em uma causa que salva vidas.
-
-### Interface do Sistema
-<p align="center">
-  <img width="1871" height="916" alt="image" src="https://github.com/user-attachments/assets/8e0e95ef-5efb-485c-85d6-bb256f2ef6ca" />
-
-</p>
-
----
-
-##  Objetivos
-
-* **Incentivar** ativamente a doação de sangue e o cadastro de medula óssea.
-* **Facilitar** o acesso público às informações de campanhas e hemocentros.
-* **Automatizar** processos administrativos internos cruciais.
-* **Melhorar** a experiência geral e a jornada digital do doador.
-
----
-
-## Funcionalidades
-
-###  Área do Doador
-* **Cadastro & Autenticação:** Login seguro para gerenciamento de perfil individual.
-* **Agendamento Online:** Marcação rápida de coletas por data, horário e unidade.
-* **Campanhas de Doação:** Consulta em tempo real de campanhas e pontos de coleta móveis.
-* **Guia Informativo:** Visualização clara de pré-requisitos e mitos/verdades sobre a doação.
-
-###  Painel Administrativo (Backoffice)
-* **Gerenciamento de Doadores:** Controle detalhado e histórico de usuários.
-* **Controle de Estoque Sanguíneo:** Monitoramento em tempo real dos níveis de cada tipo de sangue.
-* **Gestão de Campanhas:** Ferramentas para criar e divulgar novas ações de captação.
-
----
+Sistema web de apoio à doação de sangue, com recursos para doadores e administradores. A aplicação permite consultar campanhas, realizar agendamentos, acompanhar solicitações, editar perfil e usar um assistente de doação integrado ao backend.
 
 ## Tecnologias Utilizadas
 
-O projeto foi construído utilizando as seguintes tecnologias e ferramentas:
+### Frontend
+- React
+- Vite
+- React Router
+- CSS Modules
 
-| Camada / Escopo | Tecnologia |
-| :--- | :--- |
-| **Front-end** | <img src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" /> `React.js` |
-| **Linguagem** | <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" /> `JavaScript` |
-| **Estrutura** | <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" /> `HTML5` |
-| **Estilização** | <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white" /> `CSS3` |
-| **Ambiente** | <img src="https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white" /> `Node.js` |
-| **Controle de Versão** | <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white" /> `Git` / `GitHub` |
+### Backend
+- Java 21
+- Spring Boot 3
+- Spring Security
+- JWT
+- BCrypt
+- Spring Data JPA
+- PostgreSQL
 
----
+### Infraestrutura e Integrações
+- Docker / Docker Compose para PostgreSQL
+- Gemini API para o Assistente de Doação
+- Maven Wrapper
 
-## 👥 Equipe
+## Funcionalidades
 
-Projeto desenvolvido com dedicação pelos integrantes:
+### Usuário comum
+- Cadastro de usuário.
+- Login com autenticação JWT.
+- Home com resumo de campanhas e agendamentos.
+- Listagem e detalhes de campanhas.
+- Criação de agendamento.
+- Listagem, detalhes e cancelamento de agendamentos.
+- Perfil com visualização e edição de dados.
+- Orientações para doação.
+- Assistente IA para dúvidas gerais sobre doação de sangue.
 
-* 👤 **Kauan Sobreira**
-* 👤 **Renato Romano**
-* 👤 **Manoel Sergio**
-* 👤 **Ricardo Santos**
-* 👤 **Júlia Alvino**
+### Administrador
+- Login administrativo.
+- Painel administrativo.
+- Gerenciamento de campanhas.
+- Criação, edição e exclusão de campanhas.
+- Consulta de agendamentos por unidade e data.
+- Atualização de status dos agendamentos.
+- Perfil administrativo.
+- Navegação separada da visão do usuário.
 
----
+### Assistente IA
+- Tela no frontend em `/assistente`.
+- O frontend chama apenas o backend.
+- O backend chama a Gemini API usando a variável de ambiente `GEMINI_API_KEY`.
+- Endpoint principal: `POST /assistente-ia`.
+- Endpoint de status: `GET /assistente-ia/status`.
 
+## Estrutura do Projeto
 
+```text
+hemoce-web/
+├── backend/              # API Spring Boot
+├── frontend/             # Aplicação React + Vite
+├── docker-compose.yml    # PostgreSQL local
+└── README.md
+```
 
-Este projeto foi integralmente desenvolvido para fins acadêmicos e educacionais como requisito prático para a disciplina de **Desenvolvimento Web**.
+## Como Rodar Localmente
 
----
-<p align="center">
-  <sub>Desenvolvido com ❤️ para apoiar a saúde pública e salvar vidas.</sub>
-</p>
+### Pré-requisitos
+- Java 21.
+- Node.js.
+- Docker e Docker Compose.
+- Git.
+
+### Subir o banco com Docker
+
+Na raiz do projeto:
+
+```bash
+docker compose up -d
+```
+
+O `docker-compose.yml` sobe um PostgreSQL com:
+
+- Banco: `sangueamigo`
+- Usuário: `postgres`
+- Senha: `postgres`
+- Porta: `5432`
+
+### Rodar o backend
+
+Linux/macOS:
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+Windows PowerShell:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Por padrão, a API sobe em:
+
+```text
+http://localhost:8080
+```
+
+### Rodar o frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Por padrão, o Vite sobe em:
+
+```text
+http://localhost:5173
+```
+
+### Build do frontend
+
+```bash
+cd frontend
+npm run build
+```
+
+## Variáveis de Ambiente
+
+### Gemini
+
+A chave da Gemini deve ficar somente no ambiente local ou no ambiente de deploy. Nunca salve a chave no repositório.
+
+PowerShell, temporário para a sessão atual:
+
+```powershell
+$env:GEMINI_API_KEY="SUA_CHAVE_AQUI"
+```
+
+PowerShell, persistente no Windows:
+
+```powershell
+setx GEMINI_API_KEY "SUA_CHAVE_AQUI"
+```
+
+Também é possível ajustar o modelo:
+
+```powershell
+$env:GEMINI_MODEL="gemini-2.5-flash"
+```
+
+### Banco de dados
+
+O backend lê as configurações padrão em `backend/src/main/resources/application.yaml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sangueamigo
+    username: postgres
+    password: postgres
+```
+
+## Endpoints Principais
+
+### Autenticação
+- `POST /auth/cadastro-usuario`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/recuperar-senha`
+- `POST /auth/redefinir-senha`
+
+### Campanhas
+- `GET /campanhas`
+- `GET /campanhas/{id}`
+- `GET /campanhas/admin`
+- `POST /campanhas`
+- `PUT /campanhas/{id}`
+- `DELETE /campanhas/{id}`
+
+### Agendamentos
+- `POST /agendamentos`
+- `GET /agendamentos`
+- `GET /agendamentos/ativos`
+- `PATCH /agendamentos/{id}/cancelar`
+- `GET /agendamentos/admin?hemocentroId={id}&data={yyyy-mm-dd}`
+- `PATCH /agendamentos/admin/{id}/status`
+
+### Perfil
+- `GET /usuarios/perfil`
+- `PUT /usuarios/perfil`
+- `GET /administradores/perfil`
+- `PUT /administradores/perfil`
+
+### Hemocentros e horários
+- `GET /hemocentros`
+- `GET /hemocentros/{id}`
+- `GET /hemocentros/{id}/horarios?data={yyyy-mm-dd}`
+- `GET /hemocentros/{id}/horarios-periodo?inicio={yyyy-mm-dd}&fim={yyyy-mm-dd}`
+- `POST /hemocentros`
+- `PUT /hemocentros/{id}`
+- `DELETE /hemocentros/{id}`
+- `POST /hemocentros/{id}/horarios`
+- `PUT /hemocentros/{hemocentroId}/horarios/{id}`
+- `DELETE /hemocentros/{hemocentroId}/horarios/{id}`
+
+### Orientações
+- `GET /orientacoes`
+
+### Assistente IA
+- `POST /assistente-ia`
+- `GET /assistente-ia/status`
+
+Exemplo de corpo para o assistente:
+
+```json
+{
+  "pergunta": "Quem pode doar sangue?"
+}
+```
+
+## Credenciais de Teste
+
+### Administrador
+- E-mail: `admin@sangueamigo.local`
+- Senha: `Admin123!`
+
+O administrador é criado automaticamente pelo backend quando o projeto sobe, usando as configurações `app.admin.*`.
+
+### Usuário comum
+- E-mail: `maria@email.com`
+- Senha: `Senha123!`
+
+Se o banco estiver limpo, cadastre o usuário comum pela tela de cadastro ou pelo endpoint `POST /auth/cadastro-usuario`.
+
+## Observações Importantes
+
+- Não commitar chaves, tokens ou segredos.
+- A Gemini API deve ser chamada apenas pelo backend.
+- O frontend nunca deve chamar a Gemini diretamente.
+- A variável `GEMINI_API_KEY` precisa estar definida antes de iniciar o backend para que o assistente use IA real.
+- Sem `GEMINI_API_KEY`, o backend mantém uma resposta local orientativa como fallback.
+- Hemocentros e horários podem precisar ser cadastrados no banco ou pela API administrativa antes de testar agendamentos.
+
+## Status do Projeto
+
+Projeto em desenvolvimento acadêmico, com fluxo principal de autenticação, campanhas, agendamentos, perfil, orientações e assistente de doação já integrados.
+
+## Equipe
+
+- Kauan Sobreira
+- Renato Romano
+- Manoel Sergio
+- Ricardo Santos
+- Júlia Alvino
+
+Projeto desenvolvido para fins acadêmicos na disciplina de Desenvolvimento Web.
