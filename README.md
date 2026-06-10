@@ -172,8 +172,6 @@ spring:
 - `POST /auth/cadastro-usuario`
 - `POST /auth/login`
 - `POST /auth/refresh`
-- `POST /auth/recuperar-senha`
-- `POST /auth/redefinir-senha`
 
 ### Campanhas
 - `GET /campanhas`

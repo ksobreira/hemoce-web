@@ -88,13 +88,6 @@ function Login() {
               <div className={styles.inputGroup}>
                 <div className={styles.labelRow}>
                   <label htmlFor="senha">SENHA</label>
-                  <button
-                    type="button"
-                    className={styles.esqueceuSenhaBtn}
-                    onClick={() => setModalEsqueciAberto(true)}
-                  >
-                    Esqueceu a senha?
-                  </button>
                 </div>
 
                 <input
@@ -156,48 +149,6 @@ function Login() {
           </div>
         </div>
       </div>
-
-      {modalEsqueciAberto && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setModalEsqueciAberto(false)}
-        >
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.modalFechar}
-              onClick={() => setModalEsqueciAberto(false)}
-            >
-              &times;
-            </button>
-
-            <div className={styles.modalBodyVertical}>
-              <h3>Recuperar Senha</h3>
-              <p>
-                Informe o e-mail associado à sua conta. Enviaremos as instruções
-                para você redefinir sua senha.
-              </p>
-
-              <form onSubmit={handleRecuperarSenha} className={styles.modalForm}>
-                <div className={styles.inputGroupModal}>
-                  <label htmlFor="emailRecuperacao">E-MAIL DE CADASTRO</label>
-                  <input
-                    id="emailRecuperacao"
-                    type="email"
-                    placeholder="seu@email.com"
-                    value={emailRecuperacao}
-                    onChange={(e) => setEmailRecuperacao(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <button type="submit" className={styles.btnEnviarRecuperacao}>
-                  ENVIAR INSTRUÇÕES
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
       {modalSobreNosAberto && (
         <div

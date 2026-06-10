@@ -44,23 +44,4 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(contaService.refresh(request));
     }
-
-    // RF21 Recuperação de senha passo 1
-    @PostMapping("/recuperar-senha")
-    public ResponseEntity<Void> recuperarSenha(
-            @RequestBody @Valid RecuperarSenhaRequest request
-            ) {
-        contaService.solicitarRecuperacaoSenha(request);
-        return ResponseEntity.ok().build();
-
-    }
-
-    // RF21 Recuperação de senha passo 2
-    @PostMapping("/redefinir-senha")
-    public ResponseEntity<Void> redefinirSenha(
-            @RequestBody @Valid RedefinirSenhaRequest request
-    ) {
-        contaService.redefinirSenha(request);
-        return ResponseEntity.ok().build();
-    }
 }
