@@ -26,6 +26,11 @@ function somenteNumeros(value) {
   return value.replace(/\D/g, '').slice(0, 11);
 }
 
+function telefoneValido(value) {
+  const telefoneLimpo = somenteNumeros(value);
+  return telefoneLimpo.length === 10 || telefoneLimpo.length === 11;
+}
+
 function Cadastro() {
   const navigate = useNavigate();
 
@@ -53,6 +58,13 @@ function Cadastro() {
       return;
     }
 
+    const telefoneLimpo = somenteNumeros(telefone);
+
+    if (!telefoneValido(telefoneLimpo)) {
+      setErro('Informe um telefone válido com DDD.');
+      return;
+    }
+
     const tipoSanguineoBackend = converterTipoSanguineo(
       tipoSanguineo,
       fatorRhPositivo
@@ -71,7 +83,7 @@ function Cadastro() {
       dataNascimento,
       tipoSanguineo: tipoSanguineoBackend,
       sexo,
-      telefone: somenteNumeros(telefone),
+      telefone: telefoneLimpo,
       cidade,
     };
 

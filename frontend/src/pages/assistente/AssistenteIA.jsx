@@ -83,6 +83,13 @@ function AssistenteIA() {
     enviarPergunta();
   }
 
+  function handleKeyDown(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      enviarPergunta();
+    }
+  }
+
   function handleSugestao(texto) {
     enviarPergunta(texto);
   }
@@ -146,6 +153,7 @@ function AssistenteIA() {
                 ref={inputRef}
                 value={pergunta}
                 onChange={(event) => setPergunta(event.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Digite sua dúvida sobre doação de sangue"
                 rows={2}
                 disabled={loading}

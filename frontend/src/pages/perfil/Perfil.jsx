@@ -25,6 +25,11 @@ function somenteNumeros(value) {
   return value.replace(/\D/g, "").slice(0, 11);
 }
 
+function telefoneValido(value) {
+  const telefoneLimpo = somenteNumeros(value);
+  return telefoneLimpo.length === 10 || telefoneLimpo.length === 11;
+}
+
 function formatarTipoSanguineo(tipo) {
   const item = tiposSanguineos.find(([value]) => value === tipo);
   return item?.[1] || tipo || "Não informado";
@@ -184,16 +189,23 @@ function Perfil() {
       setErro("");
       setSucesso("");
 
+      if (!telefoneValido(form.telefone)) {
+        setErro("Informe um telefone válido com DDD.");
+        return;
+      }
+
+      const telefoneLimpo = somenteNumeros(form.telefone);
+
       const dadosAtualizados = isAdmin
         ? await perfilService.atualizarPerfilAdmin({
             nome: form.nome.trim(),
-            telefone: somenteNumeros(form.telefone),
+            telefone: telefoneLimpo,
             cargo: form.cargo.trim(),
             hemocentroId: form.hemocentroId,
           })
         : await perfilService.atualizarPerfil({
             nome: form.nome.trim(),
-            telefone: somenteNumeros(form.telefone),
+            telefone: telefoneLimpo,
             cidade: form.cidade.trim(),
             dataNascimento: form.dataNascimento,
             tipoSanguineo: form.tipoSanguineo,
