@@ -10,6 +10,7 @@ import NovoAgendamento from "../pages/agendamentos/NovoAgendamento";
 import DetalhesAgendamento from "../pages/agendamentos/DetalhesAgendamento";
 import Campanhas from "../pages/campanhas/Campanhas";
 import DetalhesCampanhas from "../pages/campanhas/DetalhesCampanhas";
+import Orientacoes from "../pages/orientacoes/Orientacoes";
 
 import AdminCampanhas from "../pages/admin/AdminCampanhas";
 import AdminNovaCampanha from "../pages/admin/AdminNovaCampanha";
@@ -217,6 +218,15 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <DetalhesCampanhas />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/orientacoes"
+        element={
+          <PrivateRoute>
+            <Orientacoes />
           </PrivateRoute>
         }
       />
