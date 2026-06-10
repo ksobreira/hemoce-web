@@ -16,13 +16,19 @@ function getInitials(name, fallback) {
   return parts[0]?.slice(0, 2).toUpperCase() || fallback;
 }
 
+function getFirstName(name, fallback) {
+  return name?.trim().split(/\s+/)[0] || fallback;
+}
+
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, isAdmin, userName } = useAuth();
 
   const inicioPath = isAdmin ? "/admin" : "/home";
-  const displayName = isAdmin ? userName || "Administrador" : userName || "Usuário";
+  const displayName = isAdmin
+    ? getFirstName(userName, "Administrador")
+    : getFirstName(userName, "Usuário");
   const avatarInitials = isAdmin ? "AD" : getInitials(displayName, "US");
 
   const userLinks = [

@@ -21,6 +21,10 @@ const sexos = [
   ["FEMININO", "Feminino"],
 ];
 
+function somenteNumeros(value) {
+  return value.replace(/\D/g, "").slice(0, 11);
+}
+
 function formatarTipoSanguineo(tipo) {
   const item = tiposSanguineos.find(([value]) => value === tipo);
   return item?.[1] || tipo || "Não informado";
@@ -53,7 +57,7 @@ function getInitials(name, fallback = "US") {
 function criarFormularioUsuario(perfil) {
   return {
     nome: perfil?.nome || "",
-    telefone: perfil?.telefone || "",
+    telefone: somenteNumeros(perfil?.telefone || ""),
     cidade: perfil?.cidade || "",
     dataNascimento: perfil?.dataNascimento || "",
     tipoSanguineo: perfil?.tipoSanguineo || "",
@@ -64,7 +68,7 @@ function criarFormularioUsuario(perfil) {
 function criarFormularioAdmin(perfil) {
   return {
     nome: perfil?.nome || "Administrador",
-    telefone: perfil?.telefone || "",
+    telefone: somenteNumeros(perfil?.telefone || ""),
     cargo: perfil?.cargo || "",
     hemocentroId: perfil?.hemocentroId ?? null,
   };
@@ -161,7 +165,7 @@ function Perfil() {
     const { name, value } = event.target;
     setForm((currentForm) => ({
       ...currentForm,
-      [name]: value,
+      [name]: name === "telefone" ? somenteNumeros(value) : value,
     }));
   }
 
@@ -183,13 +187,13 @@ function Perfil() {
       const dadosAtualizados = isAdmin
         ? await perfilService.atualizarPerfilAdmin({
             nome: form.nome.trim(),
-            telefone: form.telefone.trim(),
+            telefone: somenteNumeros(form.telefone),
             cargo: form.cargo.trim(),
             hemocentroId: form.hemocentroId,
           })
         : await perfilService.atualizarPerfil({
             nome: form.nome.trim(),
-            telefone: form.telefone.trim(),
+            telefone: somenteNumeros(form.telefone),
             cidade: form.cidade.trim(),
             dataNascimento: form.dataNascimento,
             tipoSanguineo: form.tipoSanguineo,
@@ -319,6 +323,9 @@ function Perfil() {
                       Telefone
                       <input
                         name="telefone"
+                        inputMode="numeric"
+                        maxLength={11}
+                        pattern="[0-9]*"
                         value={form.telefone}
                         onChange={handleChange}
                       />
@@ -359,6 +366,9 @@ function Perfil() {
                         Telefone
                         <input
                           name="telefone"
+                          inputMode="numeric"
+                          maxLength={11}
+                          pattern="[0-9]*"
                           value={form.telefone}
                           onChange={handleChange}
                         />

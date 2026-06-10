@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 12px 20px;
   padding-bottom: 85px; /* Abre espaço de segurança para o rodapé flutuante */
   box-sizing: border-box;
 }
@@ -64,9 +64,9 @@
    ========================================================================== */
 .cadastroCard {
   width: 100%;
-  max-width: 540px; 
+  max-width: 500px; 
   height: auto;
-  padding: 20px 30px; /* Reduzido o respiro vertical para a caixa encolher */
+  padding: 14px 28px; /* Reduzido o respiro vertical para a caixa encolher */
   background: #ffffff !important; 
   border-radius: 24px !important; 
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); 
@@ -90,13 +90,13 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .logoWrapper {
   width: 100%;
-  max-width: 150px; /* Logo sutilmente menor para compensar o novo input */
-  margin-bottom: 4px;
+  max-width: 124px; /* Logo menor para caber inteira sem cortar */
+  margin-bottom: 2px;
 }
 
 .logoImg {
@@ -106,7 +106,7 @@
 }
 
 .slogan {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
   color: var(--cor-escuro-medium);
   opacity: 0.7;
@@ -127,8 +127,8 @@
 .formGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px 14px; /* Diminuído o gap vertical para segurar a altura */
-  margin-bottom: 14px;
+  gap: 6px 14px; /* Diminuído o gap vertical para segurar a altura */
+  margin-bottom: 10px;
 }
 
 .inputGroup label,
@@ -138,19 +138,19 @@
   font-size: 0.75rem; /* Fonte compacta e elegante */
   font-weight: 700;
   color: var(--cor-escuro-total);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .inputGroup input,
 .inputGroupFull input,
 .inputGroup select {
   width: 100%;
-  padding: 10px 12px; /* Inputs mais baixos na altura */
+  padding: 8px 12px; /* Inputs mais baixos na altura */
   background-color: #ffffff;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px !important;
   color: var(--cor-escuro-total);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   transition: all 0.2s ease;
   outline: none;
   box-sizing: border-box;
@@ -159,7 +159,7 @@
 /* Estilização do Select do Tipo Sanguíneo */
 .inputGroup select {
   cursor: pointer;
-  height: 40px; /* Ajustado para bater com a altura dos inputs */
+  height: 36px; /* Ajustado para bater com a altura dos inputs */
 }
 
 .inputGroup input:focus,
@@ -194,7 +194,7 @@
   background-color: #ffffff;
   border: 1.5px solid #e2e8f0;
   border-radius: 10px !important;
-  height: 40px; /* Alinhado com a altura padrão dos inputs */
+  height: 36px; /* Alinhado com a altura padrão dos inputs */
   padding: 0 10px;
   box-sizing: border-box;
 }
@@ -265,7 +265,7 @@
 /* Botão Enviar Cadastro */
 .btnCadastrar {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: var(--cor-primaria);
   color: #ffffff;
   border: none;
@@ -282,7 +282,7 @@
 
 .formFooter {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 0.85rem;
   color: var(--cor-escuro-medium);
 }

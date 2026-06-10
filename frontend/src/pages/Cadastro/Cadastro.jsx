@@ -22,6 +22,10 @@ function converterTipoSanguineo(tipo, fatorRhPositivo) {
   return mapa[tipo] || '';
 }
 
+function somenteNumeros(value) {
+  return value.replace(/\D/g, '').slice(0, 11);
+}
+
 function Cadastro() {
   const navigate = useNavigate();
 
@@ -67,7 +71,7 @@ function Cadastro() {
       dataNascimento,
       tipoSanguineo: tipoSanguineoBackend,
       sexo,
-      telefone,
+      telefone: somenteNumeros(telefone),
       cidade,
     };
 
@@ -154,15 +158,12 @@ function Cadastro() {
                   <input
                     id="telefone"
                     type="text"
+                    inputMode="numeric"
+                    maxLength={11}
+                    pattern="[0-9]*"
                     placeholder="85999999999"
                     value={telefone}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-
-                      if (value.length <= 11) {
-                        setTelefone(value);
-                      }
-                    }}
+                    onChange={(e) => setTelefone(somenteNumeros(e.target.value))}
                     required
                   />
                 </div>
