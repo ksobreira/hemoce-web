@@ -121,6 +121,21 @@ export const orientacoesService = {
   },
 };
 
+export const assistenteIaService = {
+  enviarMensagem(pergunta) {
+    return request("/assistente-ia", {
+      method: "POST",
+      body: JSON.stringify({ pergunta }),
+    });
+  },
+
+  consultarStatus() {
+    return request("/assistente-ia/status", {
+      method: "GET",
+    });
+  },
+};
+
 export const perfilService = {
   obterPerfil() {
     return api.get("/usuarios/perfil");
