@@ -22,6 +22,15 @@ function converterTipoSanguineo(tipo, fatorRhPositivo) {
   return mapa[tipo] || '';
 }
 
+function somenteNumeros(value) {
+  return value.replace(/\D/g, '').slice(0, 11);
+}
+
+function telefoneValido(value) {
+  const telefoneLimpo = somenteNumeros(value);
+  return telefoneLimpo.length === 10 || telefoneLimpo.length === 11;
+}
+
 function Cadastro() {
   const navigate = useNavigate();
 
@@ -49,6 +58,13 @@ function Cadastro() {
       return;
     }
 
+    const telefoneLimpo = somenteNumeros(telefone);
+
+    if (!telefoneValido(telefoneLimpo)) {
+      setErro('Informe um telefone válido com DDD.');
+      return;
+    }
+
     const tipoSanguineoBackend = converterTipoSanguineo(
       tipoSanguineo,
       fatorRhPositivo
@@ -67,7 +83,7 @@ function Cadastro() {
       dataNascimento,
       tipoSanguineo: tipoSanguineoBackend,
       sexo,
-      telefone,
+      telefone: telefoneLimpo,
       cidade,
     };
 
@@ -154,15 +170,12 @@ function Cadastro() {
                   <input
                     id="telefone"
                     type="text"
+                    inputMode="numeric"
+                    maxLength={11}
+                    pattern="[0-9]*"
                     placeholder="85999999999"
                     value={telefone}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-
-                      if (value.length <= 11) {
-                        setTelefone(value);
-                      }
-                    }}
+                    onChange={(e) => setTelefone(somenteNumeros(e.target.value))}
                     required
                   />
                 </div>

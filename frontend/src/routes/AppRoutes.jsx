@@ -12,6 +12,7 @@ import Campanhas from "../pages/campanhas/Campanhas";
 import DetalhesCampanhas from "../pages/campanhas/DetalhesCampanhas";
 import Orientacoes from "../pages/orientacoes/Orientacoes";
 import Perfil from "../pages/perfil/Perfil";
+import AssistenteIA from "../pages/assistente/AssistenteIA";
 
 import AdminCampanhas from "../pages/admin/AdminCampanhas";
 import AdminNovaCampanha from "../pages/admin/AdminNovaCampanha";
@@ -237,6 +238,15 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Perfil />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/assistente"
+        element={
+          <PrivateRoute>
+            <AssistenteIA />
           </PrivateRoute>
         }
       />

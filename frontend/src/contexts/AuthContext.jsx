@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
-import { authService } from "../services/api";
+import { authService, perfilService } from "../services/api";
 
 export const AuthContext = createContext(null);
 
@@ -41,8 +41,19 @@ export function AuthProvider({ children }) {
     localStorage.setItem("refreshToken", response.refreshToken);
     localStorage.setItem("role", response.role);
 
-    const userName = response.nome || response.name || "";
-    const userEmail = response.email || email;
+    let profile = null;
+
+    try {
+      profile =
+        response.role === "ROLE_ADMIN"
+          ? await perfilService.obterPerfilAdmin()
+          : await perfilService.obterPerfil();
+    } catch {
+      profile = null;
+    }
+
+    const userName = response.nome || response.name || profile?.nome || "";
+    const userEmail = response.email || profile?.email || email;
 
     if (userName) {
       localStorage.setItem("userName", userName);

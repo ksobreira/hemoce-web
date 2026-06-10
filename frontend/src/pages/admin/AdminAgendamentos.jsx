@@ -15,6 +15,15 @@ function formatarHorario(horario) {
   return horario.slice(0, 5);
 }
 
+function ordenarPorDataHorario(lista) {
+  return [...lista].sort((a, b) => {
+    const dataA = `${a.data || ""}T${a.horario || "00:00"}`;
+    const dataB = `${b.data || ""}T${b.horario || "00:00"}`;
+
+    return dataA.localeCompare(dataB);
+  });
+}
+
 function formatarStatus(status) {
   const mapa = {
     PENDENTE: "Pendente",
@@ -82,7 +91,8 @@ function AdminAgendamentos() {
         data
       );
 
-      setAgendamentos(Array.isArray(dados) ? dados : []);
+      const lista = Array.isArray(dados) ? dados : [];
+      setAgendamentos(ordenarPorDataHorario(lista));
     } catch (error) {
       setErro(error.message || "Não foi possível carregar os agendamentos.");
     } finally {
