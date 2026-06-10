@@ -20,7 +20,17 @@ public class AssistenteIaService {
 
     private static final Logger log = LoggerFactory.getLogger(AssistenteIaService.class);
 
-    private static final String AVISO_ORIENTATIVO = "Resposta orientativa. Casos específicos devem ser confirmados junto ao hemocentro ou profissional responsável.";
+    private static final String GEMINI_URL =
+            "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent";
+    private static final String AVISO_ORIENTATIVO =
+            "Resposta orientativa. Casos específicos devem ser confirmados junto ao hemocentro ou profissional responsável.";
+    private static final String INSTRUCOES = """
+            Você é o assistente virtual do projeto Sangue Amigo.
+            Responda em português do Brasil, de forma clara, acolhedora e curta.
+            Responda somente dúvidas gerais relacionadas à doação de sangue.
+            Não faça diagnósticos, não determine se uma pessoa está apta a doar e não substitua avaliação profissional.
+            Em casos pessoais, sintomas, medicamentos ou condições de saúde, recomende confirmar diretamente com o hemocentro ou profissional responsável.
+            """;
 
     @Value("${gemini.api-key:}")
     private String geminiApiKey;
@@ -39,15 +49,14 @@ public class AssistenteIaService {
     public AssistenteIaResponse responder(String pergunta) {
         if (!chaveConfigurada()) {
             log.info("Gemini API key ausente. Usando resposta local.");
-            return respostaLocal(pergunta);
+            return respostaLocal();
         }
 
         try {
-            log.info("Chamando Gemini para gerar resposta");
-
             GeminiResponse response = restClientBuilder.build()
                     .post()
-                    .uri("https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}", model, geminiApiKey)
+                    .uri(GEMINI_URL, model)
+                    .header("x-goog-api-key", geminiApiKey)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GeminiRequest.from(pergunta))
                     .retrieve()
@@ -55,14 +64,14 @@ public class AssistenteIaService {
 
             String texto = extrairTexto(response);
             if (texto == null || texto.isBlank()) {
-                log.warn("Resposta da Gemini veio vazia ou inválida. Usando resposta local.");
-                return respostaLocal(pergunta);
+                log.warn("Resposta do Gemini veio vazia ou inválida. Usando resposta local.");
+                return respostaLocal();
             }
 
             return new AssistenteIaResponse(texto.strip(), AVISO_ORIENTATIVO, true);
         } catch (Exception ex) {
             log.warn("Falha ao chamar Gemini, usando fallback local: {}", ex.getMessage());
-            return respostaLocal(pergunta);
+            return respostaLocal();
         }
     }
 
@@ -70,7 +79,7 @@ public class AssistenteIaService {
         return geminiApiKey != null && !geminiApiKey.isBlank();
     }
 
-    private AssistenteIaResponse respostaLocal(String pergunta) {
+    private AssistenteIaResponse respostaLocal() {
         String resposta = """
                 Posso orientar sobre critérios gerais para doação de sangue: esteja em boas condições de saúde, leve documento oficial com foto, evite jejum e confirme na unidade os critérios de idade, peso, medicamentos, vacinas, procedimentos recentes e intervalo entre doações.
                 """.strip();
@@ -84,29 +93,32 @@ public class AssistenteIaService {
         }
 
         Candidate candidate = response.candidates().get(0);
-        if (candidate.content() == null || candidate.content().parts() == null || candidate.content().parts().isEmpty()) {
+        if (candidate.content() == null
+                || candidate.content().parts() == null
+                || candidate.content().parts().isEmpty()) {
             return null;
         }
 
-        return candidate.content().parts().get(0).text();
+        return candidate.content().parts().stream()
+                .map(Part::text)
+                .filter(text -> text != null && !text.isBlank())
+                .findFirst()
+                .orElse(null);
     }
 
     private record GeminiRequest(
             List<Content> contents,
             @JsonProperty("system_instruction")
-            SystemInstruction systemInstruction
+            Content systemInstruction,
+            GenerationConfig generationConfig
     ) {
         static GeminiRequest from(String pergunta) {
             return new GeminiRequest(
                     List.of(new Content(List.of(new Part(pergunta)))),
-                    new SystemInstruction(List.of(new Part("""
-                            Você é um assistente do projeto Sangue Amigo. Responda em português do Brasil, de forma clara e curta, apenas com orientações gerais sobre doação de sangue. Não diagnostique aptidão e sempre recomende confirmar casos específicos com o hemocentro.
-                            """.strip())))
+                    new Content(List.of(new Part(INSTRUCOES.strip()))),
+                    new GenerationConfig(500)
             );
         }
-    }
-
-    private record SystemInstruction(List<Part> parts) {
     }
 
     private record Content(List<Part> parts) {
@@ -115,19 +127,14 @@ public class AssistenteIaService {
     private record Part(String text) {
     }
 
+    private record GenerationConfig(Integer maxOutputTokens) {
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     private record GeminiResponse(List<Candidate> candidates) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private record Candidate(ContentResponse content) {
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private record ContentResponse(List<PartResponse> parts) {
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private record PartResponse(String text) {
+    private record Candidate(Content content) {
     }
 }

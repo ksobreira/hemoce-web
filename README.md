@@ -134,7 +134,7 @@ npm run build
 
 ### Gemini
 
-A chave da Gemini deve ficar somente no ambiente local ou no ambiente de deploy. Nunca salve a chave no repositório.
+A chave do Gemini deve ficar somente no ambiente local ou no ambiente de deploy. Nunca salve a chave no repositório.
 
 PowerShell, temporário para a sessão atual:
 
