@@ -1,60 +1,113 @@
-import React from 'react';
-import Header from '../../components/layout/Header';
-import styles from './Orientacoes.module.css';
+import React, { useEffect, useState } from "react";
+import Header from "../../components/layout/Header";
+import { orientacoesService } from "../../services/api";
+import styles from "./Orientacoes.module.css";
 
-function Orientações() {
-  const requisitos = [
-    { id: 1, titulo: 'Idade', info: 'Ter entre 16 e 69 anos (menores de 18 com autorização).' },
-    { id: 2, titulo: 'Peso', info: 'Pesar no mínimo 50kg.' },
-    { id: 3, titulo: 'Saúde', info: 'Estar descansado e não ter ingerido álcool nas últimas 12h.' },
-    { id: 4, titulo: 'Documentos', info: 'Apresentar documento original com foto.' }
-  ];
+const orientacoesFallback = [
+  {
+    titulo: "Requisitos básicos",
+    descricao: "Conferências iniciais antes de buscar um hemocentro.",
+    itens: [
+      "Estar em boas condições gerais de saúde.",
+      "Apresentar documento oficial com foto.",
+      "Estar alimentado e descansado.",
+      "Confirmar idade, peso e demais critérios diretamente com a unidade de doação.",
+    ],
+  },
+  {
+    titulo: "Antes da doação",
+    descricao: "Cuidados recomendados para o dia da doação.",
+    itens: [
+      "Evite jejum prolongado.",
+      "Beba água ao longo do dia.",
+      "Evite bebidas alcoólicas nas horas anteriores.",
+      "Informe medicamentos em uso e histórico recente de saúde ao atendimento.",
+    ],
+  },
+];
 
-  const impedimentos = [
-    { id: 5, titulo: 'Temporários', info: 'Gripe, gravidez, tatuagem recente (12 meses).' },
-    { id: 6, titulo: 'Definitivos', info: 'Hepatite após os 11 anos, doenças transmissíveis pelo sangue.' }
-  ];
+function Orientacoes() {
+  const [orientacoes, setOrientacoes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    async function carregarOrientacoes() {
+      try {
+        setLoading(true);
+        setErro("");
+
+        const dados = await orientacoesService.listarOrientacoes();
+        setOrientacoes(Array.isArray(dados) ? dados : []);
+      } catch (error) {
+        setErro(
+          error.message ||
+            "Não foi possível carregar as orientações atualizadas."
+        );
+        setOrientacoes(orientacoesFallback);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarOrientacoes();
+  }, []);
 
   return (
-    <div className={styles.container}>
+    <>
       <Header />
-      <main className={styles.content}>
-        <h1 className={styles.tituloPagina}>Quem pode doar?</h1>
-        <p className={styles.subtitulo}>Confira os requisitos básicos e prepare-se para salvar vidas.</p>
 
-        <section className={styles.section}>
-          <h2>Requisitos Básicos</h2>
-          <div className={styles.grid}>
-            {requisitos.map(item => (
-              <div key={item.id} className={styles.card}>
-                <h3>{item.titulo}</h3>
-                <p>{item.info}</p>
-              </div>
-            ))}
-          </div>
+      <main className={styles.page}>
+        <section className={styles.hero}>
+          <span className={styles.eyebrow}>Doação de sangue</span>
+          <h1>Orientações para doar com segurança</h1>
+          <p>
+            Consulte cuidados importantes antes, durante e depois da doação.
+            Casos específicos devem sempre ser confirmados com a equipe do
+            hemocentro.
+          </p>
         </section>
 
-        <section className={styles.section}>
-          <h2>Principais Impedimentos</h2>
-          <div className={styles.listaImpedimentos}>
-            {impedimentos.map(item => (
-              <div key={item.id} className={styles.itemImpedimento}>
-                <span className={styles.bullet}>!</span>
+        {loading && (
+          <section className={styles.feedbackBox}>
+            <p>Carregando orientações...</p>
+          </section>
+        )}
+
+        {erro && (
+          <section className={styles.noticeBox}>
+            <p>{erro}</p>
+          </section>
+        )}
+
+        {!loading && orientacoes.length === 0 && (
+          <section className={styles.feedbackBox}>
+            <h2>Nenhuma orientação cadastrada</h2>
+            <p>Assim que houver orientações disponíveis, elas aparecerão aqui.</p>
+          </section>
+        )}
+
+        {!loading && orientacoes.length > 0 && (
+          <section className={styles.grid}>
+            {orientacoes.map((orientacao) => (
+              <article key={orientacao.titulo} className={styles.card}>
                 <div>
-                  <h4>{item.titulo}</h4>
-                  <p>{item.info}</p>
+                  <h2>{orientacao.titulo}</h2>
+                  <p>{orientacao.descricao}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        <div className={styles.bannerDica}>
-          <p><strong>Dica:</strong> No dia da doação, alimente-se bem, mas evite comidas gordurosas!</p>
-        </div>
+                <ul>
+                  {(orientacao.itens || []).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </section>
+        )}
       </main>
-    </div>
+    </>
   );
 }
 
-export default Orientações;
+export default Orientacoes;

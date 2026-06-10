@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { authService } from "../services/api";
 
 export const AuthContext = createContext(null);
@@ -8,6 +8,8 @@ export function AuthProvider({ children }) {
     accessToken: null,
     refreshToken: null,
     role: null,
+    userName: null,
+    userEmail: null,
   });
 
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -16,12 +18,16 @@ export function AuthProvider({ children }) {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
     const role = localStorage.getItem("role");
+    const userName = localStorage.getItem("userName");
+    const userEmail = localStorage.getItem("userEmail") || localStorage.getItem("email");
 
     if (accessToken && role) {
       setAuth({
         accessToken,
         refreshToken,
         role,
+        userName,
+        userEmail,
       });
     }
 
@@ -35,30 +41,75 @@ export function AuthProvider({ children }) {
     localStorage.setItem("refreshToken", response.refreshToken);
     localStorage.setItem("role", response.role);
 
+    const userName = response.nome || response.name || "";
+    const userEmail = response.email || email;
+
+    if (userName) {
+      localStorage.setItem("userName", userName);
+    } else {
+      localStorage.removeItem("userName");
+    }
+
+    localStorage.setItem("userEmail", userEmail);
+    localStorage.setItem("email", userEmail);
+
     setAuth({
       accessToken: response.accessToken,
       refreshToken: response.refreshToken,
       role: response.role,
+      userName,
+      userEmail,
     });
 
     return response;
   }
 
+  const updateUserData = useCallback(({ name, email } = {}) => {
+    setAuth((currentAuth) => {
+      const nextAuth = {
+        ...currentAuth,
+        userName: name ?? currentAuth.userName,
+        userEmail: email ?? currentAuth.userEmail,
+      };
+
+      if (nextAuth.userName) {
+        localStorage.setItem("userName", nextAuth.userName);
+      } else {
+        localStorage.removeItem("userName");
+      }
+
+      if (nextAuth.userEmail) {
+        localStorage.setItem("userEmail", nextAuth.userEmail);
+        localStorage.setItem("email", nextAuth.userEmail);
+      }
+
+      return nextAuth;
+    });
+  }, []);
+
   function logout() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("role");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
 
     setAuth({
       accessToken: null,
       refreshToken: null,
       role: null,
+      userName: null,
+      userEmail: null,
     });
   }
 
   const isAuthenticated = Boolean(auth.accessToken);
   const isAdmin = auth.role === "ROLE_ADMIN";
   const isUsuario = auth.role === "ROLE_USUARIO";
+  const userName = auth.userName;
+  const userEmail = auth.userEmail;
+  const role = auth.role;
 
   return (
     <AuthContext.Provider
@@ -68,8 +119,12 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         isUsuario,
+        userName,
+        userEmail,
+        role,
         login,
         logout,
+        updateUserData,
       }}
     >
       {children}

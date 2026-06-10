@@ -1,98 +1,119 @@
-.container { 
-  min-height: 100vh; 
-  background-color: #f8f9fa; 
+.page {
+  min-height: calc(100vh - 78px);
+  padding: 48px 24px 72px;
+  background: var(--bg-principal);
+  font-family: var(--fonte-principal);
 }
 
-.content { 
-  max-width: 1000px; 
-  margin: 0 auto; 
-  padding: 40px 20px;
-  font-family: 'Segoe UI', Roboto, sans-serif;
+.hero,
+.grid,
+.feedbackBox,
+.noticeBox {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.tituloPagina { 
-  font-size: 2rem; 
-  color: #1a1a1a; 
-  margin-bottom: 10px; 
+.hero {
+  margin-bottom: 30px;
 }
 
-.subtitulo { 
-  color: #666; 
-  margin-bottom: 40px; 
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--cor-primaria);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.section { 
-  margin-bottom: 50px; 
+.hero h1 {
+  margin: 0 0 10px;
+  color: var(--cor-escuro-total);
+  font-size: 2rem;
+  font-weight: 900;
 }
 
-.section h2 { 
-  font-size: 1.2rem; 
-  color: #e31e24; 
-  border-bottom: 2px solid #eee; 
-  padding-bottom: 10px; 
-  margin-bottom: 25px; 
-  text-transform: uppercase; 
+.hero p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--cor-escuro-medium);
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
-.grid { display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-  gap: 20px; 
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
 }
 
-.card { 
-  background: #fff; 
-  padding: 25px; 
-  border-radius: 12px; 
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-  transition: transform 0.2s;
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 260px;
+  padding: 26px;
+  border: 1px solid #eeeeee;
+  border-radius: 8px;
+  background: var(--bg-card);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.045);
 }
 
-.card h3 { 
-  color: #e31e24; 
-  margin-bottom: 10px; 
-  font-size: 1.1rem; 
+.card h2 {
+  margin: 0 0 8px;
+  color: var(--cor-escuro-total);
+  font-size: 1.2rem;
+  font-weight: 900;
 }
 
-.card p { 
-  font-size: 0.9rem; 
-  color: #555; 
-  line-height: 1.5; 
+.card p {
+  margin: 0;
+  color: #666666;
+  line-height: 1.55;
 }
 
-.listaImpedimentos { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 15px; 
+.card ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--cor-escuro-medium);
+  line-height: 1.5;
 }
 
-.itemImpedimento { 
-  background: #fff; 
-  padding: 20px; 
-  border-radius: 12px; 
-  display: flex; 
-  align-items: center; 
-  gap: 20px; 
-  border-left: 5px solid #ffc107; 
-}
-
-.bullet { 
-  background: #ffc107; 
-  color: #fff; 
-  width: 30px; 
-  height: 30px; 
-  border-radius: 50%; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-weight: bold; 
-  flex-shrink: 0;
-}
-
-.bannerDica { 
-  background: #e31e24; 
-  color: #fff; 
-  padding: 25px; 
-  border-radius: 16px; 
-  text-align: center;
+.feedbackBox,
+.noticeBox {
   margin-top: 20px;
+  padding: 22px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--cor-escuro-medium);
+}
+
+.feedbackBox h2 {
+  margin: 0 0 8px;
+  color: var(--cor-escuro-total);
+}
+
+.feedbackBox p,
+.noticeBox p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.noticeBox {
+  border: 1px solid #f4d1d1;
+  background: #fff7f7;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 34px 16px 56px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

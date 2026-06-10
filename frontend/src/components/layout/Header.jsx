@@ -4,12 +4,26 @@ import logoSangueAmigo from "../../assets/logo-sangue-amigo.jpeg";
 import { useAuth } from "../../hooks/useAuth";
 import styles from "./Header.module.css";
 
+function getInitials(name, fallback) {
+  if (!name) return fallback;
+
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+
+  return parts[0]?.slice(0, 2).toUpperCase() || fallback;
+}
+
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, userName } = useAuth();
 
   const inicioPath = isAdmin ? "/admin" : "/home";
+  const displayName = isAdmin ? userName || "Administrador" : userName || "Usuário";
+  const avatarInitials = isAdmin ? "AD" : getInitials(displayName, "US");
 
   const userLinks = [
     { to: inicioPath, label: "INÍCIO" },
@@ -84,6 +98,7 @@ function Header() {
         },
       ],
     },
+    { to: "/orientacoes", label: "ORIENTAÇÕES" },
   ];
 
   const links = isAdmin ? adminLinks : userLinks;
@@ -142,10 +157,8 @@ function Header() {
 
         <div className={styles.profileArea}>
           <Link to="/perfil" className={styles.profileLink}>
-            <span className={styles.userName}>
-              {isAdmin ? "ADMIN" : "JOÃO SILVA"}
-            </span>
-            <span className={styles.userAvatar}>{isAdmin ? "AD" : "JS"}</span>
+            <span className={styles.userName}>{displayName}</span>
+            <span className={styles.userAvatar}>{avatarInitials}</span>
           </Link>
 
           <button

@@ -1,262 +1,470 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth'; 
-import styles from './Perfil.module.css';
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import Header from "../../components/layout/Header";
+import { useAuth } from "../../hooks/useAuth";
+import { perfilService } from "../../services/api";
+import styles from "./Perfil.module.css";
+
+const tiposSanguineos = [
+  ["A_POS", "A+"],
+  ["A_NEG", "A-"],
+  ["B_POS", "B+"],
+  ["B_NEG", "B-"],
+  ["AB_POS", "AB+"],
+  ["AB_NEG", "AB-"],
+  ["O_POS", "O+"],
+  ["O_NEG", "O-"],
+];
+
+const sexos = [
+  ["MASCULINO", "Masculino"],
+  ["FEMININO", "Feminino"],
+];
+
+function formatarTipoSanguineo(tipo) {
+  const item = tiposSanguineos.find(([value]) => value === tipo);
+  return item?.[1] || tipo || "Não informado";
+}
+
+function formatarSexo(sexo) {
+  const item = sexos.find(([value]) => value === sexo);
+  return item?.[1] || sexo || "Não informado";
+}
+
+function formatarData(data) {
+  if (!data) return "Não informado";
+
+  const [ano, mes, dia] = data.split("-");
+  return ano && mes && dia ? `${dia}/${mes}/${ano}` : data;
+}
+
+function getInitials(name, fallback = "US") {
+  if (!name) return fallback;
+
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+
+  return parts[0]?.slice(0, 2).toUpperCase() || fallback;
+}
+
+function criarFormularioUsuario(perfil) {
+  return {
+    nome: perfil?.nome || "",
+    telefone: perfil?.telefone || "",
+    cidade: perfil?.cidade || "",
+    dataNascimento: perfil?.dataNascimento || "",
+    tipoSanguineo: perfil?.tipoSanguineo || "",
+    sexo: perfil?.sexo || "",
+  };
+}
+
+function criarFormularioAdmin(perfil) {
+  return {
+    nome: perfil?.nome || "Administrador",
+    telefone: perfil?.telefone || "",
+    cargo: perfil?.cargo || "",
+    hemocentroId: perfil?.hemocentroId ?? null,
+  };
+}
 
 function Perfil() {
-  const navigate = useNavigate();
-  const auth = useAuth();
- 
-  const [dadosUsuario, setDadosUsuario] = useState(null);
+  const { isAdmin, userEmail, updateUserData } = useAuth();
+  const [perfil, setPerfil] = useState(null);
+  const [form, setForm] = useState(criarFormularioUsuario(null));
   const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(null);
+  const [salvando, setSalvando] = useState(false);
+  const [editando, setEditando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+  const [adminEditavel, setAdminEditavel] = useState(true);
 
   useEffect(() => {
-    const buscarDadosPerfil = async () => {
+    async function carregarPerfil() {
       try {
         setLoading(true);
-        
-        
-        const API_URL = 'http://localhost:8080'; 
-        
-        const token = localStorage.getItem('token') || auth?.token;
+        setErro("");
+        setSucesso("");
+        setAdminEditavel(true);
 
-        const response = await fetch(`${API_URL}/usuarios/perfil`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-        
-            'Authorization': token ? `Bearer ${token}` : '' 
-          }
-        });
+        const dados = isAdmin
+          ? await perfilService.obterPerfilAdmin()
+          : await perfilService.obterPerfil();
 
-        if (!response.ok) {
-          throw new Error('Não foi possível carregar os dados do perfil.');
+        setPerfil(dados);
+        setForm(isAdmin ? criarFormularioAdmin(dados) : criarFormularioUsuario(dados));
+        updateUserData({ name: dados?.nome, email: dados?.email });
+      } catch {
+        if (isAdmin) {
+          setPerfil(null);
+          setForm(criarFormularioAdmin(null));
+          setAdminEditavel(false);
+          setErro("Para alterar dados administrativos, entre em contato com o responsável pelo sistema.");
+        } else {
+          setErro("Não foi possível carregar os dados do perfil no momento.");
         }
-
-        const data = await response.json();
-        setDadosUsuario(data);
-      } catch (err) {
-        console.error(err);
-        setErro(err.message);
       } finally {
         setLoading(false);
       }
-    };
-
-    buscarDadosPerfil();
-  }, [auth]);
-
-  const handleLogout = () => {
-    if (auth?.logout) {
-      auth.logout();
-    }
-    navigate('/login');
-  };
-
-  // Função para formatar LocalDate (AAAA-MM-DD) para DD/MM/AAAA
-  const formatarData = (dataString) => {
-    if (!dataString) return 'Não informada';
-    const partes = dataString.split('-'); // ['2026', '06', '09']
-    if (partes.length !== 3) return dataString;
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-  };
-
-  // Lógica de Negócio: Calcula dias restantes e aptidão baseado no sexo do usuário
-  const statusDoacao = useMemo(() => {
-    // Como o endpoint atual não traz a lista de doações, simulamos com base na última cadastrada
-    // Caso seu back envie as doações futuramente, altere para dadosUsuario?.doacoes
-    const doacoesDoUsuario = dadosUsuario?.doacoes || []; 
-
-    if (doacoesDoUsuario.length === 0) {
-      return { diasRestantes: 0, apto: true, mensagem: 'APTO' };
     }
 
-    const ultimaDoacaoData = new Date(doacoesDoUsuario[0].data);
-    const hoje = new Date();
-    
-    const diferencaTempo = hoje.getTime() - ultimaDoacaoData.getTime();
-    const diasPassados = Math.floor(diferencaTempo / (1000 * 60 * 60 * 24));
+    carregarPerfil();
+  }, [isAdmin, updateUserData]);
 
-    // Regra padrão: Homem 90 dias, Mulher 120 dias
-    const intervaloNecessario = dadosUsuario?.sexo?.toUpperCase() === 'F' ? 120 : 90;
-    const restantes = intervaloNecessario - diasPassados;
-
-    if (restantes > 0) {
-      return { diasRestantes: restantes, apto: false, mensagem: 'INAPTO TEMPORARIAMENTE' };
+  const campos = useMemo(() => {
+    if (isAdmin) {
+      return [
+        ["Nome", perfil?.nome || "Administrador"],
+        ["E-mail", perfil?.email || userEmail || "admin@sangueamigo.local"],
+        ["Telefone", perfil?.telefone],
+        ["Cargo", perfil?.cargo],
+        ["Hemocentro", perfil?.nomeHemocentro],
+        ["Tipo de acesso", "Administrativo"],
+      ];
     }
 
-    return { diasRestantes: 0, apto: true, mensagem: 'APTO' };
-  }, [dadosUsuario]);
+    if (!perfil) return [];
 
-  // 1. Tela de Carregamento Inicial
-  if (loading) {
-    return (
-      <div className={styles.containerLoading}>
-        <div className={styles.spinner}></div>
-        <p>Carregando dados do perfil Hemoce...</p>
-      </div>
-    );
+    return [
+      ["Nome", perfil.nome],
+      ["E-mail", perfil.email],
+      ["CPF", perfil.cpf],
+      ["Telefone", perfil.telefone],
+      ["Cidade", perfil.cidade],
+      ["Data de nascimento", formatarData(perfil.dataNascimento)],
+      ["Tipo sanguíneo", formatarTipoSanguineo(perfil.tipoSanguineo)],
+      ["Sexo", formatarSexo(perfil.sexo)],
+    ];
+  }, [isAdmin, perfil, userEmail]);
+
+  const adminAtalhos = [
+    {
+      to: "/admin",
+      title: "Painel administrativo",
+      description: "Acesse a visão geral da administração.",
+    },
+    {
+      to: "/admin/campanhas",
+      title: "Campanhas",
+      description: "Gerencie campanhas e alertas ativos.",
+    },
+    {
+      to: "/admin/agendamentos",
+      title: "Agendamentos",
+      description: "Acompanhe e atualize solicitações de doação.",
+    },
+  ];
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }));
   }
 
-
-  if (erro) {
-    return (
-      <div className={styles.containerLoading} style={{ color: '#c53030' }}>
-        <h2>⚠️ Erro ao carregar perfil</h2>
-        <p>{erro}</p>
-        <button className={styles.btnEditar} style={{ maxWidth: '200px' }} onClick={() => window.location.reload()}>
-          Tentar Novamente
-        </button>
-      </div>
-    );
+  function handleCancelar() {
+    setForm(isAdmin ? criarFormularioAdmin(perfil) : criarFormularioUsuario(perfil));
+    setEditando(false);
+    setErro("");
+    setSucesso("");
   }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    try {
+      setSalvando(true);
+      setErro("");
+      setSucesso("");
+
+      const dadosAtualizados = isAdmin
+        ? await perfilService.atualizarPerfilAdmin({
+            nome: form.nome.trim(),
+            telefone: form.telefone.trim(),
+            cargo: form.cargo.trim(),
+            hemocentroId: form.hemocentroId,
+          })
+        : await perfilService.atualizarPerfil({
+            nome: form.nome.trim(),
+            telefone: form.telefone.trim(),
+            cidade: form.cidade.trim(),
+            dataNascimento: form.dataNascimento,
+            tipoSanguineo: form.tipoSanguineo,
+            sexo: form.sexo,
+          });
+
+      setPerfil(dadosAtualizados);
+      setForm(
+        isAdmin
+          ? criarFormularioAdmin(dadosAtualizados)
+          : criarFormularioUsuario(dadosAtualizados)
+      );
+      updateUserData({
+        name: dadosAtualizados?.nome,
+        email: dadosAtualizados?.email,
+      });
+      setEditando(false);
+      setSucesso("Perfil atualizado com sucesso.");
+    } catch {
+      setErro("Não foi possível atualizar o perfil. Confira os dados e tente novamente.");
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  const tituloPerfil = isAdmin ? "Perfil Administrativo" : "Meu perfil";
+  const subtituloPerfil = isAdmin
+    ? "Confira seus dados administrativos e acesse rapidamente as áreas de gestão."
+    : "Confira seus dados cadastrados no sistema.";
+  const nomeExibido = isAdmin
+    ? perfil?.nome || "Administrador"
+    : perfil?.nome || "Usuário Sangue Amigo";
+  const avatar = isAdmin ? "AD" : getInitials(perfil?.nome || perfil?.email);
 
   return (
-    <div className={styles.container}>
-      {/* Topbar Superior */}
-      <header className={styles.topbar}>
-        <div className={styles.logoArea}>
-          <div className={styles.logoSquare}></div>
-          <span className={styles.logoTexto}>DOAÇÃO DE SANGUE</span>
-        </div>
-        <div className={styles.usuarioBadge}>
-          {(dadosUsuario?.nome || 'USUÁRIO').toUpperCase()}
-        </div>
-      </header>
+    <>
+      <Header />
 
-      {/* Menu de Navegação Global */}
-      <nav className={styles.navbar}>
-        <button className={styles.navItem} onClick={() => navigate('/home')}>INÍCIO</button>
-        <button className={styles.navItem} onClick={() => navigate('/agendamentos')}>AGENDAMENTOS</button>
-        <button className={styles.navItem} onClick={() => navigate('/campanhas')}>CAMPANHAS</button>
-        <button className={styles.navItem} onClick={() => navigate('/orientacoes')}> ORIENTAÇÕES</button>
-        <button className={styles.navItem} onClick={() => navigate('/assistente')}>ASSISTENTE IA</button>
-      </nav>
-
-      {/* Área de Conteúdo Central */}
-      <main className={styles.conteudo}>
-        <h2 className={styles.tituloPagina}>MEU PERFIL</h2>
-
-        <div className={styles.gridSuperior}>
-          {/* Coluna Esquerda: Dados Pessoais vindos do Endpoint */}
-          <section className={styles.cardDadosPessoais}>
-            <h3>DADOS PESSOAIS</h3>
-            <div className={styles.formFake}>
-              <div className={styles.row}>
-                <div className={styles.inputGroup}>
-                  <label>NOME COMPLETO:</label>
-                  <div className={styles.dadoBox}>{dadosUsuario?.nome ?? 'Não informado'}</div>
-                </div>
-                <div className={styles.inputGroupSmall}>
-                  <label>TIPO SANGUÍNEO:</label>
-                  <div className={styles.dadoBoxDestaque}>{dadosUsuario?.tipoSanguineo ?? 'N/A'}</div>
-                </div>
-              </div>
-
-              <div className={styles.row}>
-                <div className={styles.inputGroup}>
-                  <label>CPF:</label>
-                  <div className={styles.dadoBox}>{dadosUsuario?.cpf ?? 'Não informado'}</div>
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>DATA DE NASCIMENTO:</label>
-                  <div className={styles.dadoBox}>
-                    {formatarData(dadosUsuario?.dataNascimento)}
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.row}>
-                <div className={styles.inputGroup}>
-                  <label>E-MAIL:</label>
-                  <div className={styles.dadoBox}>{dadosUsuario?.email ?? 'Não informado'}</div>
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>TELEFONE:</label>
-                  <div className={styles.dadoBox}>{dadosUsuario?.telefone ?? 'Não informado'}</div>
-                </div>
-              </div>
-
-              <div className={styles.row}>
-                <div className={styles.inputGroup}>
-                  <label>CIDADE:</label>
-                  <div className={styles.dadoBox}>{dadosUsuario?.cidade ?? 'Não informada'}</div>
-                </div>
-                <div className={styles.inputGroupSmall}>
-                  <label>SEXO:</label>
-                  <div className={styles.dadoBox} style={{ textAlign: 'center' }}>
-                    {dadosUsuario?.sexo ?? '-'}
-                  </div>
-                </div>
-              </div>
-
-              <button className={styles.btnEditar} onClick={() => navigate('/perfil/editar')}>
-                EDITAR DADOS
-              </button>
-            </div>
-          </section>
-
-          {/* Coluna Direita: Estatísticas Rápidas */}
-          <aside className={styles.colunaLateral}>
-            <div className={styles.cardEstatistica}>
-              <h3>ESTATÍSTICAS</h3>
-              <div className={styles.statsGrid}>
-                <div className={styles.statItem}>
-                  <span className={styles.statNumero}>{dadosUsuario?.doacoes?.length ?? 0}</span>
-                  <span className={styles.statLabel}>DOAÇÕES REALIZADAS</span>
-                </div>
-                <div className={styles.statItem}>
-                  <span 
-                    className={styles.statStatus} 
-                    style={{ color: statusDoacao.apto ? '#2f855a' : '#c53030' }}
-                  >
-                    {statusDoacao.apto ? '✓ APTO' : '✕ INAPTO'}
-                  </span>
-                  <span className={styles.statLabel}>{statusDoacao.mensagem}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.cardProximaDoacao}>
-              <h3>PRÓXIMA DOAÇÃO</h3>
-              <div className={styles.countdownContainer}>
-                <span className={styles.countdownNumero}>
-                  {statusDoacao.diasRestantes}
-                </span>
-                <span className={styles.countdownLabel}>DIAS RESTANTES</span>
-              </div>
-            </div>
-
-            <button className={styles.btnSair} onClick={handleLogout}>
-              SAIR DA CONTA
-            </button>
-          </aside>
-        </div>
-
-        {/* Seção Inferior: Histórico de Doações */}
-        <section className={styles.cardHistorico}>
-          <h3>HISTÓRICO DE DOAÇÕES</h3>
-          <div className={styles.listaHistorico}>
-            {dadosUsuario?.doacoes && dadosUsuario.doacoes.length > 0 ? (
-              dadosUsuario.doacoes.map((item, index) => (
-                <div key={index} className={styles.historicoLinha}>
-                  <div className={styles.historicoInfo}>
-                    <strong>{formatarData(item.data)}</strong>
-                    <span>{item.local ?? 'Hemocentro'}</span>
-                  </div>
-                  <span className={styles.tagRealizado}>{item.status ?? 'CONFIRMADO'}</span>
-                </div>
-              ))
-            ) : (
-              <div style={{ textAlign: 'center', padding: '15px', fontSize: '0.85rem', color: '#666' }}>
-                Nenhuma doação cadastrada no histórico.
-              </div>
-            )}
+      <main className={styles.page}>
+        <section className={styles.pageHeader}>
+          <div>
+            <span className={styles.eyebrow}>Conta</span>
+            <h1>{tituloPerfil}</h1>
+            <p>{subtituloPerfil}</p>
           </div>
         </section>
+
+        {loading && (
+          <section className={styles.feedbackBox}>
+            <p>Carregando perfil...</p>
+          </section>
+        )}
+
+        {!loading && !isAdmin && erro && !perfil && (
+          <section className={styles.errorBox}>
+            <h2>Perfil indisponível</h2>
+            <p>{erro}</p>
+          </section>
+        )}
+
+        {!loading && (isAdmin || perfil) && (
+          <section className={styles.profilePanel}>
+            <div className={styles.profileSummary}>
+              <div className={styles.avatar}>{avatar}</div>
+
+              <div>
+                <h2>{nomeExibido}</h2>
+                <p>{isAdmin ? "Perfil: Administrador" : "Doador"}</p>
+              </div>
+            </div>
+
+            {sucesso && <p className={styles.successBox}>{sucesso}</p>}
+            {erro && <p className={styles.inlineError}>{erro}</p>}
+
+            {!editando ? (
+              <>
+                <div className={styles.detailsGrid}>
+                  {campos.map(([label, value]) => (
+                    <div key={label} className={styles.detailItem}>
+                      <span>{label}</span>
+                      <strong>{value || "Não informado"}</strong>
+                    </div>
+                  ))}
+                </div>
+
+                {isAdmin && (
+                  <div className={styles.shortcutGrid}>
+                    {adminAtalhos.map((atalho) => (
+                      <Link key={atalho.to} to={atalho.to} className={styles.shortcutCard}>
+                        <strong>{atalho.title}</strong>
+                        <span>{atalho.description}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={styles.primaryButton}
+                    onClick={() => {
+                      setEditando(true);
+                      setErro("");
+                      setSucesso("");
+                    }}
+                    disabled={isAdmin && !adminEditavel}
+                  >
+                    Editar perfil
+                  </button>
+                </div>
+              </>
+            ) : (
+              <form className={styles.form} onSubmit={handleSubmit}>
+                {isAdmin ? (
+                  <div className={styles.formGrid}>
+                    <label>
+                      Nome
+                      <input
+                        name="nome"
+                        value={form.nome}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Telefone
+                      <input
+                        name="telefone"
+                        value={form.telefone}
+                        onChange={handleChange}
+                      />
+                    </label>
+
+                    <label>
+                      Cargo
+                      <input
+                        name="cargo"
+                        value={form.cargo}
+                        onChange={handleChange}
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      E-mail
+                      <input
+                        value={perfil?.email || userEmail || "admin@sangueamigo.local"}
+                        disabled
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.formGrid}>
+                      <label>
+                        Nome
+                        <input
+                          name="nome"
+                          value={form.nome}
+                          onChange={handleChange}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Telefone
+                        <input
+                          name="telefone"
+                          value={form.telefone}
+                          onChange={handleChange}
+                        />
+                      </label>
+
+                      <label>
+                        Cidade
+                        <input
+                          name="cidade"
+                          value={form.cidade}
+                          onChange={handleChange}
+                        />
+                      </label>
+
+                      <label>
+                        Data de nascimento
+                        <input
+                          type="date"
+                          name="dataNascimento"
+                          value={form.dataNascimento}
+                          onChange={handleChange}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Tipo sanguíneo
+                        <select
+                          name="tipoSanguineo"
+                          value={form.tipoSanguineo}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Selecione</option>
+                          {tiposSanguineos.map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label>
+                        Sexo
+                        <select
+                          name="sexo"
+                          value={form.sexo}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Selecione</option>
+                          {sexos.map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label>
+                        E-mail
+                        <input value={perfil.email || ""} disabled />
+                      </label>
+
+                      <label>
+                        CPF
+                        <input value={perfil.cpf || ""} disabled />
+                      </label>
+                    </div>
+
+                    <p className={styles.formHint}>
+                      Para alterar e-mail ou CPF, entre em contato com a unidade responsável.
+                    </p>
+                  </>
+                )}
+
+                {isAdmin && (
+                  <p className={styles.formHint}>
+                    Para alterar e-mail ou vínculo de unidade, entre em contato com o responsável pelo sistema.
+                  </p>
+                )}
+
+                <div className={styles.actions}>
+                  <button
+                    type="submit"
+                    className={styles.primaryButton}
+                    disabled={salvando}
+                  >
+                    {salvando ? "Salvando..." : "Salvar alterações"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={styles.secondaryButton}
+                    onClick={handleCancelar}
+                    disabled={salvando}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
+          </section>
+        )}
       </main>
-    </div>
+    </>
   );
 }
 
