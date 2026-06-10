@@ -1,0 +1,98 @@
+.container { 
+  min-height: 100vh; 
+  background-color: #f8f9fa; 
+}
+
+.content { 
+  max-width: 1000px; 
+  margin: 0 auto; 
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.tituloPagina { 
+  font-size: 2rem; 
+  color: #1a1a1a; 
+  margin-bottom: 10px; 
+}
+
+.subtitulo { 
+  color: #666; 
+  margin-bottom: 40px; 
+}
+
+.section { 
+  margin-bottom: 50px; 
+}
+
+.section h2 { 
+  font-size: 1.2rem; 
+  color: #e31e24; 
+  border-bottom: 2px solid #eee; 
+  padding-bottom: 10px; 
+  margin-bottom: 25px; 
+  text-transform: uppercase; 
+}
+
+.grid { display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 20px; 
+}
+
+.card { 
+  background: #fff; 
+  padding: 25px; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+  transition: transform 0.2s;
+}
+
+.card h3 { 
+  color: #e31e24; 
+  margin-bottom: 10px; 
+  font-size: 1.1rem; 
+}
+
+.card p { 
+  font-size: 0.9rem; 
+  color: #555; 
+  line-height: 1.5; 
+}
+
+.listaImpedimentos { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 15px; 
+}
+
+.itemImpedimento { 
+  background: #fff; 
+  padding: 20px; 
+  border-radius: 12px; 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+  border-left: 5px solid #ffc107; 
+}
+
+.bullet { 
+  background: #ffc107; 
+  color: #fff; 
+  width: 30px; 
+  height: 30px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  flex-shrink: 0;
+}
+
+.bannerDica { 
+  background: #e31e24; 
+  color: #fff; 
+  padding: 25px; 
+  border-radius: 16px; 
+  text-align: center;
+  margin-top: 20px;
+}

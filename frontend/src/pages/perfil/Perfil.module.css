@@ -1,0 +1,344 @@
+.container {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f9fc;
+  font-family: var(--fonte-principal), sans-serif;
+  box-sizing: border-box;
+}
+
+/* Topbar Superior */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoSquare {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #1a1a1a;
+}
+
+.logoTexto {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: #1a1a1a;
+}
+
+.usuarioBadge {
+  border: 1.5px solid #1a1a1a;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+  background: transparent;
+}
+
+/* Menu de Navegação Global */
+.navbar {
+  display: flex;
+  background-color: #ffffff;
+  border-bottom: 2px solid #1a1a1a;
+}
+
+.navItem {
+  flex: 1;
+  background: none;
+  border: none;
+  border-right: 1px solid #e2e8f0;
+  padding: 14px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  background-color: #f1f5f9;
+}
+
+/* Área de Conteúdo Central */
+.conteudo {
+  flex: 1;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.tituloPagina {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 30px;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid #1a1a1a;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* Grid de Divisão da Tela */
+.gridSuperior {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+/* Cards Base */
+.cardDadosPessoais, 
+.cardEstatistica, 
+.cardProximaDoacao, 
+.cardHistorico {
+  background: #ffffff;
+  border: 2px solid #1a1a1a;
+  border-radius: 4px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.cardDadosPessoais h3, 
+.cardEstatistica h3, 
+.cardProximaDoacao h3, 
+.cardHistorico h3 {
+  margin: 0 0 20px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  text-decoration: underline;
+  letter-spacing: 0.5px;
+}
+
+/* Formulário e Alinhamentos dos Inputs Virtuais */
+.formFake {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroupSmall {
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputGroup label, 
+.inputGroupSmall label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+/* Caixa onde o dado do banco de dados aparece */
+.dadoBox {
+  border: 1px solid #cbd5e1;
+  padding: 12px;
+  font-size: 0.9rem;
+  background-color: #f8fafc;
+  color: #334155;
+  border-radius: 4px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* Destaque para o Tipo Sanguíneo */
+.dadoBoxDestaque {
+  border: 2px solid #b9151a;
+  padding: 10px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-align: center;
+  background-color: #ffffff;
+  color: #b9151a;
+  border-radius: 4px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.btnEditar {
+  width: 100%;
+  padding: 14px;
+  background-color:#b9151a;
+  color: #ffffff;
+  border: 2px solid #b9151a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.btnEditar:hover {
+  background-color: #333333;
+}
+
+/* Coluna Lateral Direita */
+.colunaLateral {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  padding: 16px 8px;
+  background-color: #f8fafc;
+  border-radius: 4px;
+}
+
+.statNumero {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #b9151a;
+}
+
+.statStatus {
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  margin-top: 12px;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Card Regressivo da Próxima Doação */
+.countdownContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.countdownNumero {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #b9151a;
+  line-height: 1;
+}
+
+.countdownLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #4a5568;
+  margin-top: 4px;
+}
+
+.btnSair {
+  width: 100%;
+  padding: 14px;
+  background-color: #ffffff;
+  color: #c53030;
+  border: 2px solid #c53030;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btnSair:hover {
+  background-color: #fff5f5;
+}
+
+/* Histórico de Doações */
+.listaHistorico {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historicoLinha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  padding: 14px 20px;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.historicoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.historicoInfo strong {
+  font-size: 0.95rem;
+  color: #b9151a;
+}
+
+.historicoInfo span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.tagRealizado {
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 2px solid #b9151a;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+/* Responsividade para telas menores (Celulares e Tablets) */
+@media (max-width: 850px) {
+  .topbar { padding: 15px 20px; }
+  .navbar { flex-wrap: wrap; }
+  .navItem { flex: unset; width: 50%; border-bottom: 1px solid #e2e8f0; }
+  .gridSuperior { grid-template-columns: 1fr; }
+  .row { flex-direction: column; gap: 16px; }
+  .inputGroupSmall { width: 100%; }
+}
