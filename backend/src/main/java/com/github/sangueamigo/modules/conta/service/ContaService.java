@@ -99,31 +99,4 @@ public class ContaService {
     }
 
 
-    // RF21 Recuperação de senha: passo 1
-    public void solicitarRecuperacaoSenha(RecuperarSenhaRequest request){
-        contaRepository.findByEmail(request.email()).ifPresent(conta -> {
-            String resetToken = jwtService.gerarResetToken(conta);
-            // notificacao service envia email com token
-            eventPublisher.publishEvent(
-                    new SenhaRecuperacaoSolicitadaEvent(conta.getEmail(),resetToken));
-        });
-    }
-
-    // RF21 Recuperação de senha: passo 2
-    @Transactional
-    public void redefinirSenha(RedefinirSenhaRequest request) {
-        String email = jwtService.extrairEmail(request.token());
-
-        Conta conta = contaRepository.findByEmail(email)
-                .orElseThrow(TokenInvalidoException::new);
-
-        if (!jwtService.isResetTokenValido(request.token(), conta)) {
-            throw new TokenInvalidoException();
-        }
-
-        conta.setSenha(passwordEncoder.encode(request.novaSenha()));
-        contaRepository.save(conta);
-    }
-
-
 }
