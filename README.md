@@ -1,4 +1,4 @@
-# 🩸🩸🩸🩸🩸🩸🩸 Sangue Amigo🩸🩸🩸🩸🩸🩸🩸🩸
+# 🩸🩸🩸🩸🩸🩸🩸 Sangue Amigo🩸🩸🩸🩸🩸🩸🩸
 
 <p align="center">
   <img src="https://img.shields.io/github/repo-size/ksobreira/hemoce-web?style=for-the-badge&color=cc0000&labelColor=333333" alt="Tamanho do Repositório">
