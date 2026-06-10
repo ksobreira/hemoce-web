@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import { campanhasService } from "../../services/api";
@@ -37,10 +37,44 @@ function formatarUrgencia(urgencia) {
   return mapa[urgencia] || urgencia || "Normal";
 }
 
+function montarTiposEmDestaque(campanhas) {
+  const prioridade = {
+    CRITICA: 3,
+    ALTA: 2,
+    NORMAL: 1,
+  };
+
+  const tipos = new Map();
+
+  campanhas.forEach((campanha) => {
+    const urgenciaAtual = campanha.urgencia || "NORMAL";
+
+    (campanha.tiposSanguineosNecessarios || []).forEach((tipo) => {
+      const itemAtual = tipos.get(tipo);
+
+      if (!itemAtual || prioridade[urgenciaAtual] > prioridade[itemAtual.urgencia]) {
+        tipos.set(tipo, {
+          tipo,
+          urgencia: urgenciaAtual,
+          campanha: campanha.titulo,
+        });
+      }
+    });
+  });
+
+  return Array.from(tipos.values())
+    .sort((a, b) => prioridade[b.urgencia] - prioridade[a.urgencia])
+    .slice(0, 4);
+}
+
 function Campanhas() {
   const [campanhas, setCampanhas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState("");
+  const tiposEmDestaque = useMemo(
+    () => montarTiposEmDestaque(campanhas),
+    [campanhas]
+  );
 
   useEffect(() => {
     async function carregarCampanhas() {
@@ -84,76 +118,51 @@ function Campanhas() {
 
         <section className={styles.stockSection}>
           <div className={styles.sectionTitle}>
-            <h2>Níveis de Estoque</h2>
+            <h2>Tipos sanguíneos em destaque</h2>
             <p>
-              Indicadores visuais de apoio. A integração principal desta etapa é
-              com as campanhas cadastradas no backend.
+              Indicadores baseados nos tipos sanguíneos solicitados nas campanhas
+              ativas.
             </p>
           </div>
 
-          <div className={styles.stockGrid}>
-            <article className={styles.stockCard}>
-              <div className={styles.stockHeader}>
-                <strong>O-</strong>
-                <span className={styles.stockCritical}>Crítico</span>
-              </div>
-              <div className={styles.progressBar}>
-                <div
-                  className={`${styles.progressFill} ${styles.stockCritical}`}
-                  style={{ width: "18%" }}
-                />
-              </div>
-              <p>18% do nível ideal</p>
-            </article>
+          {loading && (
+            <div className={styles.feedbackBox}>
+              <p>Carregando indicadores das campanhas...</p>
+            </div>
+          )}
 
-            <article className={styles.stockCard}>
-              <div className={styles.stockHeader}>
-                <strong>A+</strong>
-                <span className={styles.stockWarning}>Alerta</span>
-              </div>
-              <div className={styles.progressBar}>
-                <div
-                  className={`${styles.progressFill} ${styles.stockWarning}`}
-                  style={{ width: "38%" }}
-                />
-              </div>
-              <p>38% do nível ideal</p>
-            </article>
+          {!loading && tiposEmDestaque.length === 0 && (
+            <div className={styles.feedbackBox}>
+              <p>
+                Nenhum tipo sanguíneo em destaque no momento. Quando houver
+                campanhas ativas com tipos solicitados, eles aparecerão aqui.
+              </p>
+            </div>
+          )}
 
-            <article className={styles.stockCard}>
-              <div className={styles.stockHeader}>
-                <strong>B-</strong>
-                <span className={styles.stockWarning}>Alerta</span>
-              </div>
-              <div className={styles.progressBar}>
-                <div
-                  className={`${styles.progressFill} ${styles.stockWarning}`}
-                  style={{ width: "42%" }}
-                />
-              </div>
-              <p>42% do nível ideal</p>
-            </article>
-
-            <article className={styles.stockCard}>
-              <div className={styles.stockHeader}>
-                <strong>O+</strong>
-                <span className={styles.stockStable}>Estável</span>
-              </div>
-              <div className={styles.progressBar}>
-                <div
-                  className={`${styles.progressFill} ${styles.stockStable}`}
-                  style={{ width: "72%" }}
-                />
-              </div>
-              <p>72% do nível ideal</p>
-            </article>
-          </div>
+          {!loading && tiposEmDestaque.length > 0 && (
+            <div className={styles.stockGrid}>
+              {tiposEmDestaque.map((item) => (
+                <article key={item.tipo} className={styles.stockCard}>
+                  <div className={styles.stockHeader}>
+                    <strong>{formatarTipoSanguineo(item.tipo)}</strong>
+                    <span className={getUrgencyClass(item.urgencia)}>
+                      {item.urgencia === "CRITICA"
+                        ? "Necessidade crítica"
+                        : "Prioridade da campanha"}
+                    </span>
+                  </div>
+                  <p>{item.campanha || "Campanha ativa"}</p>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className={styles.campaignSection}>
           <div className={styles.sectionTitle}>
             <h2>Campanhas Ativas</h2>
-            <p>Campanhas recuperadas da API do backend.</p>
+            <p>Campanhas disponíveis para consulta no sistema.</p>
           </div>
 
           {loading && (
@@ -172,8 +181,8 @@ function Campanhas() {
             <div className={styles.feedbackBox}>
               <h3>Nenhuma campanha cadastrada</h3>
               <p>
-                Ainda não existem campanhas cadastradas no backend. Quando o
-                administrador criar uma campanha, ela aparecerá aqui.
+                Ainda não existem campanhas cadastradas. Quando o administrador
+                criar uma campanha, ela aparecerá aqui.
               </p>
             </div>
           )}

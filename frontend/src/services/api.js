@@ -4,7 +4,7 @@ function getToken() {
   return localStorage.getItem("accessToken");
 }
 
-async function request(endpoint, options = {}) {
+async function request(path, options = {}) {
   const token = getToken();
 
   const headers = {
@@ -16,7 +16,7 @@ async function request(endpoint, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers,
   });
@@ -42,35 +42,35 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  get(endpoint) {
-    return request(endpoint, {
+  get(path) {
+    return request(path, {
       method: "GET",
     });
   },
 
-  post(endpoint, body) {
-    return request(endpoint, {
+  post(path, body) {
+    return request(path, {
       method: "POST",
       body: JSON.stringify(body),
     });
   },
 
-  put(endpoint, body) {
-    return request(endpoint, {
+  put(path, body) {
+    return request(path, {
       method: "PUT",
       body: JSON.stringify(body),
     });
   },
 
-  patch(endpoint, body) {
-    return request(endpoint, {
+  patch(path, body) {
+    return request(path, {
       method: "PATCH",
       body: body ? JSON.stringify(body) : undefined,
     });
   },
 
-  delete(endpoint) {
-    return request(endpoint, {
+  delete(path) {
+    return request(path, {
       method: "DELETE",
     });
   },
@@ -112,6 +112,30 @@ export const campanhasService = {
 
   excluirCampanha(id) {
     return api.delete(`/campanhas/${id}`);
+  },
+};
+
+export const orientacoesService = {
+  listarOrientacoes() {
+    return api.get("/orientacoes");
+  },
+};
+
+export const perfilService = {
+  obterPerfil() {
+    return api.get("/usuarios/perfil");
+  },
+
+  atualizarPerfil(dados) {
+    return api.put("/usuarios/perfil", dados);
+  },
+
+  obterPerfilAdmin() {
+    return api.get("/administradores/perfil");
+  },
+
+  atualizarPerfilAdmin(dados) {
+    return api.put("/administradores/perfil", dados);
   },
 };
 

@@ -212,28 +212,6 @@
   line-height: 1.5;
 }
 
-.mockNotice {
-  background-color: #fff7e8;
-  border: 1px solid #ffe0a8;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.mockNotice strong {
-  display: block;
-  color: #9a5b00;
-  font-size: 0.82rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.mockNotice p {
-  color: #6b4a1b;
-  font-size: 0.86rem;
-  line-height: 1.5;
-}
-
 @media (max-width: 860px) {
   .contentGrid {
     grid-template-columns: 1fr;

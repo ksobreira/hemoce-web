@@ -210,17 +210,18 @@ function DetalhesCampanhas() {
             </article>
 
             <aside className={styles.sideCard}>
-              <h2>Por que isso importa?</h2>
+              <h2>Por que essa campanha é importante?</h2>
               <p>
-                Alertas de estoque ajudam o doador a entender quais tipos
-                sanguíneos estão com maior necessidade no momento.
+                Esta campanha destaca tipos sanguíneos que precisam de atenção
+                no momento. Sua doação pode ajudar a reforçar o atendimento da
+                unidade responsável.
               </p>
 
-              <div className={styles.mockNotice}>
-                <strong>Dados do backend</strong>
+              <div className={styles.infoNotice}>
+                <strong>Como você pode ajudar</strong>
                 <p>
-                  Esta página carrega os detalhes da campanha usando o ID da rota
-                  e consultando a API do backend.
+                  Verifique se você atende às orientações de doação e escolha um
+                  horário disponível para contribuir com a campanha.
                 </p>
               </div>
             </aside>

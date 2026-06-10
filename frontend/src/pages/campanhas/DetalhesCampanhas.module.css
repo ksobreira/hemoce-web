@@ -259,7 +259,7 @@
   line-height: 1.6;
 }
 
-.mockNotice {
+.infoNotice {
   margin-top: 22px;
   background-color: #fff7e8;
   border: 1px solid #ffe0a8;
@@ -267,7 +267,7 @@
   padding: 16px;
 }
 
-.mockNotice strong {
+.infoNotice strong {
   display: block;
   color: #9a5b00;
   font-size: 0.82rem;
@@ -276,7 +276,7 @@
   margin-bottom: 6px;
 }
 
-.mockNotice p {
+.infoNotice p {
   color: #6b4a1b;
   font-size: 0.86rem;
   line-height: 1.5;
