@@ -48,6 +48,9 @@ app:
   admin:
     email: ${ADMIN_EMAIL:admin@sangueamigo.local}
     password: ${ADMIN_PASSWORD:Admin123!}
+    name: ${ADMIN_NAME:Administrador}
+    role-name: ${ADMIN_ROLE_NAME:Gestor}
+    phone: ${ADMIN_PHONE:}
 
 gemini:
   api-key: ${GEMINI_API_KEY:}

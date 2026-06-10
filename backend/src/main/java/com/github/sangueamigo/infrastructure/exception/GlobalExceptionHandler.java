@@ -1,6 +1,7 @@
 package com.github.sangueamigo.infrastructure.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.github.sangueamigo.modules.administrador.exception.AdministradorNaoEncontradoException;
 import com.github.sangueamigo.modules.agendamento.exception.*;
 import com.github.sangueamigo.modules.campanha.exception.CampanhaNaoEncontradaException;
 import com.github.sangueamigo.modules.campanha.exception.CampanhaNaoPertenceAoHemocentroException;
@@ -106,6 +107,7 @@ public class GlobalExceptionHandler {
             HemocentroNaoEncontradoException.class,
             HorarioDisponivelNaoEncontradoException.class,
             UsuarioNaoEncontradoException.class,
+            AdministradorNaoEncontradoException.class,
             EntityNotFoundException.class
     })
     public ResponseEntity<ErroResponse> handleNaoEncontrado(RuntimeException ex) {
